@@ -36,8 +36,9 @@ N_MELS         = 128
 N_MFCC         = 40
 HopLen         = 512
 RollPercent    = 0.95
-ZCR_Offset     = 0.0001
-ZCR_FrameLen   = 2048
+ZCR_Offset     = 0
+ZCR_FrameLen   = 512
+ZCR_Center     = True
 TimeWindowSize = 30
 
 def ensure_dir_exist(path):

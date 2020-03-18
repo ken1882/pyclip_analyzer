@@ -56,11 +56,13 @@ def plot_melspec(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   return sdb
 
 def plot_zcr(y, smp_rate, row=3, col=1, idx=2, **kwargs):
-  zcrs = rft.zero_crossing_rate(y + _G.ZCR_Offset, hop_length=_G.HopLen, frame_length=_G.ZCR_FrameLen)
+  zcrs = rft.zero_crossing_rate(y, hop_length=_G.HopLen, frame_length=_G.ZCR_FrameLen, center=_G.ZCR_Center)
   plt.subplot(row, col, idx)
   plt.plot(zcrs[0])
   plt.xticks([])
+  plt.xlim([0, zcrs.shape[-1]])
   plt.title('Zero-crossing Rate')
+  zcs = librosa.zero_crossings(y, pad=False)
   return zcrs
 
 def plot_mfcc(y, smp_rate, row=3, col=1, idx=2, **kwargs):
@@ -99,3 +101,4 @@ flen  = len(files)
 for i, file in enumerate(files):
   print(f"Analyzing {i+1}/{flen}")
   analyze_and_plot_audio(file, _G.plot_filename(i), True)
+  # break
