@@ -4,6 +4,8 @@ import numpy as np
 import librosa
 import librosa.display as rdis
 import librosa.feature as rft
+from glob import glob
+from os import path
 import _G
 
 def show_fullscreen():
@@ -23,15 +25,17 @@ def save_plot(filename):
     mng.window.state('zoomed')
   else:
     print("Unrecognized backend: ",backend)
-  plt.savefig(filename, dpi=_G.DPI)
+  plt.tight_layout()
+  plt.savefig(filename)
 
 def plot_waveplot(y, smp_rate, raw=3, col=1, idx=1, **kwargs):
   plt.subplot(raw, col, idx)
   rdis.waveplot(y, sr=smp_rate)
   plt.title('Waveplot')
+  return y
 
 def plot_rolloff(y, smp_rate, row=3, col=1, idx=3, **kwargs):
-  rf = rft.spectral_rolloff(y, smp_rate, n_fft=_G.N_FFT, roll_percent=0.95)
+  rf = rft.spectral_rolloff(y, smp_rate, n_fft=_G.N_FFT, roll_percent=_G.RollPercent, hop_length=_G.HopLen)
   plt.subplot(row, col, idx)
   plt.semilogy(rf.T, label='Roll-off freq.')
   plt.ylabel('Hz')
@@ -39,38 +43,33 @@ def plot_rolloff(y, smp_rate, row=3, col=1, idx=3, **kwargs):
   plt.xlim([0, rf.shape[-1]])
   plt.legend()
   plt.title('Specreal Roll-off')
+  return np.log10(rf.T)
 
 def plot_melspec(y, smp_rate, row=3, col=1, idx=2, **kwargs):
-  spec = rft.melspectrogram(y, sr=smp_rate)
+  spec = rft.melspectrogram(y, sr=smp_rate, n_mels=_G.N_MELS, n_fft=_G.N_FFT, hop_length=_G.HopLen)
   plt.subplot(row, col, idx)
   plt.semilogy(abs(spec))
   sdb = librosa.power_to_db(spec)
   rdis.specshow(sdb, sr=smp_rate, x_axis='time', y_axis='mel')
   plt.colorbar(format='%+2.0f dB')
   plt.title('Mel-Spectrogram')
-
-def plot_transQ(y, smp_rate, row=3, col=1, idx=2, **kwargs):
-  fmin = librosa.midi_to_hz(36)
-  amp = librosa.cqt(y, sr=smp_rate, fmin=fmin, n_bins=72)
-  lgamp = librosa.amplitude_to_db(abs(amp))
-  plt.subplot(row, col, idx)
-  librosa.display.specshow(lgamp, sr=smp_rate, x_axis='time', y_axis='cqt_note', fmin=fmin, cmap='coolwarm')
-  plt.colorbar(format='%+2.0f dB')
-  plt.title('Const.Q Transform')
+  return sdb
 
 def plot_zcr(y, smp_rate, row=3, col=1, idx=2, **kwargs):
-  zcrs = rft.zero_crossing_rate(y + _G.ZCR_Offset)
+  zcrs = rft.zero_crossing_rate(y + _G.ZCR_Offset, hop_length=_G.HopLen, frame_length=_G.ZCR_FrameLen)
   plt.subplot(row, col, idx)
   plt.plot(zcrs[0])
   plt.xticks([])
   plt.title('Zero-crossing Rate')
+  return zcrs
 
 def plot_mfcc(y, smp_rate, row=3, col=1, idx=2, **kwargs):
-  mfccs = rft.mfcc(y, sr=smp_rate)
+  mfccs = rft.mfcc(y, sr=smp_rate, n_mfcc=_G.N_MFCC)
   plt.subplot(row, col, idx)
   rdis.specshow(mfccs, x_axis='time')
   plt.colorbar()
   plt.title("MFCC")
+  return mfccs
 
 def plot_all(y, smp_rate):
   cnt_col = 1
@@ -80,22 +79,23 @@ def plot_all(y, smp_rate):
   for i, func in enumerate(plot_func):
     func(y, smp_rate, cnt_row, cnt_col, i+1)
 
-def analyze_audio(filename, out_filename):
+def analyze_and_plot_audio(filename, out_filename, overwrite=False):
+  if path.exists(out_filename) and not overwrite:
+    print(f"{out_filename} already exists, skipping")
+    return
   y, smp_rate = librosa.load(filename)
   print("Audio loaded")
   plot_all(y, smp_rate)
   save_plot(out_filename)
   plt.close()
+  # show_fullscreen()
 
-# FileCnt  = 10
-# for i in range(FileCnt):
-#   Filename = "sample/livestream_tmp{0:03}.mp3".format(i)
-#   y, smp_rate = librosa.load(Filename)
-#   print("Audio loaded")
-#   plot_all(y, smp_rate)
-#   save_plot("plot/plot{0:03}.jpg".format(i))
-#   plt.close()
-Index = 0
-Filename = "audio/5fw_skyfactory_clp{0:03}.mp3".format(Index)
-save_plot("plot/plot{0:03}.jpg".format(Index))
-analyze_audio(Filename)
+def get_audio_files(prefix, episode):
+  return glob(f"{_G.AudioFolder}/{prefix}/{episode}/*.{_G.AudioFormat}")
+
+_G.ensure_dir_exist(_G.plot_filename(0))
+files = get_audio_files(_G.StreamFilePrefix, _G.StreamFileSuffix)
+flen  = len(files)
+for i, file in enumerate(files):
+  print(f"Analyzing {i+1}/{flen}")
+  analyze_and_plot_audio(file, _G.plot_filename(i), True)

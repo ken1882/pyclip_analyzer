@@ -17,13 +17,11 @@ def generate_audio_clips(audio):
     subclips.append(audio.subclip(t_clips[i], t_clips[i+1]))
 
   for i, clip in enumerate(subclips):
-    filename = f"{_G.AudioFolder}/{_G.StreamFilePrefix}"
-    filename += f"{_G.AudioClipSuffix.format(i)}.{_G.AudioFormat}"
+    filename = _G.audio_filename(i)
     print(f"Exporting {filename}")
     export_audio(clip, filename)
   
-
+_G.ensure_dir_exist(_G.audio_filename(0))
 video = load_video(_G.VideoFilename)
 _G.video_length = vlen = video.duration
 generate_audio_clips(video.audio)
-# export_vaudio(video, f"{_G.AudioFolder}/{_G.VideoFileStem}.{_G.AudioFormat}")
