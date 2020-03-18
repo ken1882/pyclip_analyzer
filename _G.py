@@ -3,7 +3,7 @@ import os
 PixPerInch = 96
 DPI = 600
 PixelPerCol = 1024
-PixelPerRow = 512
+PixelPerRow = 346
 
 def inch2pixel(inch):
   return inch * PixPerInch

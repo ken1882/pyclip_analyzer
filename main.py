@@ -1,5 +1,6 @@
 from matplotlib import get_backend
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 import librosa
 import librosa.display as rdis
@@ -31,7 +32,7 @@ def save_plot(filename):
 def plot_waveplot(y, smp_rate, raw=3, col=1, idx=1, **kwargs):
   plt.subplot(raw, col, idx)
   rdis.waveplot(y, sr=smp_rate)
-  plt.title('Waveplot')
+  # plt.title('Waveplot')
   return y
 
 def plot_rolloff(y, smp_rate, row=3, col=1, idx=3, **kwargs):
@@ -42,7 +43,7 @@ def plot_rolloff(y, smp_rate, row=3, col=1, idx=3, **kwargs):
   plt.xticks([])
   plt.xlim([0, rf.shape[-1]])
   plt.legend()
-  plt.title('Specreal Roll-off')
+  # plt.title('Specreal Roll-off')
   return np.log10(rf.T)
 
 def plot_melspec(y, smp_rate, row=3, col=1, idx=2, **kwargs):
@@ -51,8 +52,11 @@ def plot_melspec(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   plt.semilogy(abs(spec))
   sdb = librosa.power_to_db(spec)
   rdis.specshow(sdb, sr=smp_rate, x_axis='time', y_axis='mel')
-  plt.colorbar(format='%+2.0f dB')
-  plt.title('Mel-Spectrogram')
+  ax = plt.gca()
+  divider = make_axes_locatable(ax)
+  cax = divider.append_axes("bottom", size="5%", pad=0.5)
+  plt.colorbar(format='%+2.0f dB', orientation='horizontal', cax=cax)
+  # plt.title('Mel-Spectrogram')
   return sdb
 
 def plot_zcr(y, smp_rate, row=3, col=1, idx=2, **kwargs):
@@ -61,7 +65,7 @@ def plot_zcr(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   plt.plot(zcrs[0])
   plt.xticks([])
   plt.xlim([0, zcrs.shape[-1]])
-  plt.title('Zero-crossing Rate')
+  # plt.title('Zero-crossing Rate')
   zcs = librosa.zero_crossings(y, pad=False)
   return zcrs
 
@@ -69,8 +73,11 @@ def plot_mfcc(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   mfccs = rft.mfcc(y, sr=smp_rate, n_mfcc=_G.N_MFCC)
   plt.subplot(row, col, idx)
   rdis.specshow(mfccs, x_axis='time')
-  plt.colorbar()
-  plt.title("MFCC")
+  ax = plt.gca()
+  divider = make_axes_locatable(ax)
+  cax = divider.append_axes("bottom", size="5%", pad=0.5)
+  plt.colorbar(orientation='horizontal', cax=cax)
+  # plt.title("MFCC")
   return mfccs
 
 def plot_all(y, smp_rate):
