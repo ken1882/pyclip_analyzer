@@ -29,6 +29,11 @@ def save_plot(filename):
   plt.tight_layout()
   plt.savefig(filename)
 
+def get_colorbar_axis():
+  ax = plt.gca()
+  divider = make_axes_locatable(ax)
+  return divider.append_axes("bottom", size="5%", pad=0.5)
+
 def plot_waveplot(y, smp_rate, raw=3, col=1, idx=1, **kwargs):
   plt.subplot(raw, col, idx)
   rdis.waveplot(y, sr=smp_rate)
@@ -51,10 +56,9 @@ def plot_melspec(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   plt.subplot(row, col, idx)
   plt.semilogy(abs(spec))
   sdb = librosa.power_to_db(spec)
+  print(sdb)
   rdis.specshow(sdb, sr=smp_rate, x_axis='time', y_axis='mel')
-  ax = plt.gca()
-  divider = make_axes_locatable(ax)
-  cax = divider.append_axes("bottom", size="5%", pad=0.5)
+  cax = get_colorbar_axis()
   plt.colorbar(format='%+2.0f dB', orientation='horizontal', cax=cax)
   # plt.title('Mel-Spectrogram')
   return sdb
@@ -73,9 +77,7 @@ def plot_mfcc(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   mfccs = rft.mfcc(y, sr=smp_rate, n_mfcc=_G.N_MFCC)
   plt.subplot(row, col, idx)
   rdis.specshow(mfccs, x_axis='time')
-  ax = plt.gca()
-  divider = make_axes_locatable(ax)
-  cax = divider.append_axes("bottom", size="5%", pad=0.5)
+  cax = get_colorbar_axis()
   plt.colorbar(orientation='horizontal', cax=cax)
   # plt.title("MFCC")
   return mfccs
@@ -95,9 +97,9 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
   y, smp_rate = librosa.load(filename)
   print("Audio loaded")
   plot_all(y, smp_rate)
-  save_plot(out_filename)
-  plt.close()
-  # show_fullscreen()
+  # save_plot(out_filename)
+  # plt.close()
+  show_fullscreen()
 
 def get_audio_files(prefix, episode):
   return glob(f"{_G.AudioFolder}/{prefix}/{episode}/*.{_G.AudioFormat}")
@@ -108,4 +110,4 @@ flen  = len(files)
 for i, file in enumerate(files):
   print(f"Analyzing {i+1}/{flen}")
   analyze_and_plot_audio(file, _G.plot_filename(i), True)
-  # break
+  break
