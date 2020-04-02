@@ -32,6 +32,7 @@ PlotFileSuffix   = "_plt{0:03}"
 VideoFileStem    = f"{StreamFilePrefix}{StreamFileSuffix}"
 VideoFilename    = f"{StreamFolder}/{VideoFileStem}.{VideoFormat}"
 AudioClipSuffix  = "_clp{0:03}"
+FullAudioFilename = f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{VideoFileStem}.{AudioFormat}"
 
 DefaultSR      = 22050
 N_FFT          = 1024
@@ -53,6 +54,13 @@ FPS = 30
 ContextSwitchOffset = 5
 UPS = int(1000 / (FPS + ContextSwitchOffset))
 UPMS = UPS / 1000
+
+def set_fps(n):
+  global FPS, UPS, UPMS
+  FPS = n
+  UPS = int(1000 / (FPS + ContextSwitchOffset))
+  UPMS = UPS / 1000
+
 VK_ESC   = 27
 VK_SPACE = 32
 VideoBufferSize = 2
@@ -64,6 +72,7 @@ TrackbarName   = "frame no."
 
 FLAG_STOP  = False
 FLAG_PAUSE = False
+
 
 def ensure_dir_exist(path):
   path = path.split('/')

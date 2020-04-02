@@ -12,14 +12,23 @@ from _G import audio_filename, out_filename
 TrackBarName   = 'frame no.'
 WindowName     = "test"
 
+def test_callback(*args):
+  print(args)
+
 class VideoPlayer:
   
+  AudioSyncInterval = 60
+
   def __init__(self, video, trackbar_name, window_name, **kwargs):
-    self.cur_frame = 0
-    self.video     = video
+    self.cur_frame   = 0
+    self.audio_frame = 0
+    self.last_vframe = -1 # last video frame
+    self.last_aframe = -1 # last audio frame
+    self.video       = video
+    self.audio       = None
+    self.audio_sync_interval = VideoPlayer.AudioSyncInterval
     if video:
       self.src       = video.src
-      self.audio     = MediaPlayer(video.src)
       self.frame_max = video.frame_max
     else:
       self.frame_max = kwargs.get('fmax')
@@ -54,24 +63,35 @@ class VideoPlayer:
 
   def set_audio_frame(self, n):
     t = self.video.frame2timestamp(n)
-    self.audio.seek(t, False)
+    print(f"Sync f={n}, t={t}")
+    self.audio.seek(t, False, accurate=True)
+
+  def sync_audio_channel(self):
+    self.set_audio_frame(self.cur_frame)
 
   def start(self):
     dth = Thread(target=self.update_decode, daemon=True)
     dth.start()
-    if self.video:
-      ath = Thread(target=self.extract_audio)
-      ath.start()
     if not self.FLAG_ENCODE_STOP:
       eth = Thread(target=self.update_encode, daemon=True)
       eth.start()
+    if self.video:
+      ath = Thread(target=self.extract_audio, daemon=True)
+      ath.start()
+      while not self.audio:
+        time.sleep(_G.UPMS)
+      sth = Thread(target=self.update_synchronzation, daemon=True)
+      sth.start()
     return self
 
   def extract_audio(self):
-    fname = audio_filename(_G.StreamFileIndex)
+    fname = _G.FullAudioFilename
     if not os.path.exists(fname):
       v = mp.VideoFileClip(self.src)
       v.audio.write_audiofile(fname)
+    self.audio = MediaPlayer(_G.FullAudioFilename, callback=test_callback)
+    self.audio.toggle_pause()
+    print("Audio loaded")
 
   def update_decode(self):
     # current framt count in decoding
@@ -96,6 +116,14 @@ class VideoPlayer:
       if not self.equeue.empty():
         ostream.write(self.equeue.get())
 
+  def update_synchronzation(self):
+    while not _G.FLAG_STOP:
+      time.sleep(_G.UPMS)
+      aframe = self.audio.get_pts() * self.video.fps
+      if abs(aframe - self.cur_frame) > 12:
+        self.pause(True)
+        print("Auto Paused")
+
   def frame_available(self):
     return self.dqueue.qsize() > 0
 
@@ -104,32 +132,43 @@ class VideoPlayer:
       return None
     return self.dqueue.get()
 
+  def get_audio_frame(self):
+    return int(self.audio.get_pts() * self.video.fps)
+
   def write_async_ostream(self, frame):
     if not self.FLAG_ENCODE_STOP:
       self.equeue.put(frame)
 
   def update(self):
-    self.update_frame()
+    frame_synced = self.update_frame()
     self.update_input()
     self.update_flags()
+    return frame_synced
   
   def update_frame(self):
-    if self.is_ended() or _G.FLAG_PAUSE:
-      return
+    if self.audio:
+      self.audio_frame = self.get_audio_frame()
+      if self.audio_frame == self.last_aframe:
+        return False
+      self.last_aframe = self.audio_frame
     
+    if self.is_ended() or _G.FLAG_PAUSE:
+      return False
+
     cv2.setTrackbarPos(self.trackbar, self.window, self.cur_frame)
     
     frame = self.get_frame()
-      
     if frame is None:
-      return
+      return False
       
     cv2.imshow(self.window, frame)
     # print(f"qsize={self.dqueue.qsize()}")
     self.write_async_ostream(frame)
     
     if not _G.FLAG_PAUSE:
-      self.cur_frame += 1
+      self.last_vframe  = self.cur_frame
+      self.cur_frame   += 1
+    return True
 
   def update_flags(self):
     if self.is_ended() and not self.equeue.empty():
@@ -138,10 +177,18 @@ class VideoPlayer:
   def update_input(self):
     key = cv2.waitKey(_G.UPS)
     if key == _G.VK_ESC:
-      _G.FLAG_STOP = True
+      self.stop()
     elif key == _G.VK_SPACE:
-      _G.FLAG_PAUSE ^= True
+      self.pause(_G.FLAG_PAUSE ^ True)
+
+  def stop(self):
+    _G.FLAG_STOP = True
+
+  def pause(self, flg):
+    if _G.FLAG_PAUSE != flg:
       self.audio.toggle_pause()
+    _G.FLAG_PAUSE = flg
+    self.sync_audio_channel()
 
   def is_ended(self):
     return self.cur_frame >= self.frame_max

@@ -61,11 +61,14 @@ def update_tracker_frame():
   while not _G.FLAG_STOP and not tracker.is_ended():
     tracker.update_frame()
 
-# Pre-cache video frames
-player.audio.toggle_pause()
-time.sleep(_G.PreCacheTime)
-player.audio.toggle_pause()
+def main_loop():
+  print("main loop start")
+  while not _G.FLAG_STOP and not player.is_ended():
+    ok = player.update()
+    if ok:
+      tracker.update_frame()
 
-while not _G.FLAG_STOP and not player.is_ended():
-  player.update()
-  tracker.update_frame()
+# Pre-cache video frames
+time.sleep(_G.PreCacheTime)
+_G.FLAG_PAUSE = True
+main_loop()
