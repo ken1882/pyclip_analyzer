@@ -26,7 +26,7 @@ def save_plot(filename):
     mng.window.state('zoomed')
   else:
     print("Unrecognized backend: ",backend)
-  plt.tight_layout()
+  plt.tight_layout(True)
   plt.savefig(filename)
 
 def get_colorbar_axis():
@@ -35,7 +35,8 @@ def get_colorbar_axis():
   return divider.append_axes("bottom", size="5%", pad=0.5)
 
 def plot_waveplot(y, smp_rate, raw=3, col=1, idx=1, **kwargs):
-  plt.subplot(raw, col, idx)
+  ax = plt.subplot(raw, col, idx)
+  print(ax.get_xbound())
   rdis.waveplot(y, sr=smp_rate)
   # plt.title('Waveplot')
   return y
@@ -46,7 +47,7 @@ def plot_rolloff(y, smp_rate, row=3, col=1, idx=3, **kwargs):
   plt.semilogy(rf.T, label='Roll-off freq.')
   plt.ylabel('Hz')
   plt.xticks([])
-  plt.xlim([0, rf.shape[-1]])
+  plt.xlim([0, _G.PLT_XLIM])
   plt.legend()
   # plt.title('Specreal Roll-off')
   return np.log10(rf.T)
@@ -56,7 +57,6 @@ def plot_melspec(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   plt.subplot(row, col, idx)
   plt.semilogy(abs(spec))
   sdb = librosa.power_to_db(spec)
-  print(sdb)
   rdis.specshow(sdb, sr=smp_rate, x_axis='time', y_axis='mel')
   cax = get_colorbar_axis()
   plt.colorbar(format='%+2.0f dB', orientation='horizontal', cax=cax)
@@ -68,7 +68,7 @@ def plot_zcr(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   plt.subplot(row, col, idx)
   plt.plot(zcrs[0])
   plt.xticks([])
-  plt.xlim([0, zcrs.shape[-1]])
+  plt.xlim([0, _G.PLT_XLIM])
   # plt.title('Zero-crossing Rate')
   zcs = librosa.zero_crossings(y, pad=False)
   return zcrs
@@ -97,9 +97,9 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
   y, smp_rate = librosa.load(filename)
   print("Audio loaded")
   plot_all(y, smp_rate)
-  # save_plot(out_filename)
-  # plt.close()
-  show_fullscreen()
+  save_plot(out_filename)
+  plt.close()
+  # show_fullscreen()
 
 def get_audio_files(prefix, episode):
   return glob(f"{_G.AudioFolder}/{prefix}/{episode}/*.{_G.AudioFormat}")
@@ -110,4 +110,5 @@ flen  = len(files)
 for i, file in enumerate(files):
   print(f"Analyzing {i+1}/{flen}")
   analyze_and_plot_audio(file, _G.plot_filename(i), True)
-  break
+  # if i >= 2:
+  #   break

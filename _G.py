@@ -1,4 +1,5 @@
 import os
+import pickle as pk
 
 PixPerInch = 96
 DPI = 600
@@ -20,7 +21,8 @@ PlotFolder    = "plot"
 
 VideoFormat   = "mp4"
 AudioFormat   = "mp3"
-PlotFormat    = "jpg"
+PlotFormat    = "png"
+OutFormat     = "mkv"
 
 StreamFileIndex  = 1
 StreamFilePrefix = "5fw_skyfactory"
@@ -31,6 +33,7 @@ VideoFileStem    = f"{StreamFilePrefix}{StreamFileSuffix}"
 VideoFilename    = f"{StreamFolder}/{VideoFileStem}.{VideoFormat}"
 AudioClipSuffix  = "_clp{0:03}"
 
+DefaultSR      = 22050
 N_FFT          = 1024
 N_MELS         = 128
 N_MFCC         = 40
@@ -40,6 +43,27 @@ ZCR_Offset     = 0
 ZCR_FrameLen   = 512
 ZCR_Center     = True
 TimeWindowSize = 30
+
+PLT_XLIM = int(DefaultSR * TimeWindowSize / HopLen + 0.5)
+
+PlotXTimeStartPos = 179
+PlotXTimeEndPos   = 1874
+
+FPS = 30
+ContextSwitchOffset = 5
+UPS = int(1000 / (FPS + ContextSwitchOffset))
+UPMS = UPS / 1000
+VK_ESC   = 27
+VK_SPACE = 32
+VideoBufferSize = 2
+
+VideoCodec = 'h264'
+MaxQueueSize = 128
+
+TrackbarName   = "frame no."
+
+FLAG_STOP  = False
+FLAG_PAUSE = False
 
 def ensure_dir_exist(path):
   path = path.split('/')
@@ -58,5 +82,21 @@ def plot_filename(idx):
 def audio_filename(idx):
   return f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{AudioClipSuffix.format(idx)}.{AudioFormat}"
 
-video_length    = 0
+def out_filename(idx):
+  return f"{StreamFolder}/{VideoFileStem}_out.{OutFormat}"
 
+def dump_data(data, fname):
+  with open(fname, 'wb') as fp:
+    pk.dump(data, fp)
+
+def load_data(fname):
+  with open(fname, 'rb') as fp:
+    return pk.load(fp)
+
+PlotXseekPos = [175, 1850]
+PlotYseekPos = 20
+PlotWindowColorThreshold = 0xFF - 0xE0
+PlotPlaybackFilename = f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/playback{StreamFileSuffix}.dat"
+IndicatorColor = (0,0,0)
+
+PreCacheTime = 3 # sec
