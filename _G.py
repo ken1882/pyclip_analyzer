@@ -52,17 +52,26 @@ PlotXTimeEndPos   = 1874
 
 FPS = 30
 ContextSwitchOffset = 5
-UPS = int(1000 / (FPS + ContextSwitchOffset))
-UPMS = UPS / 1000
+AbsUPS = 1 / FPS
+UPMS   = int(1000 / (FPS + ContextSwitchOffset))
+UPS    = UPMS / 1000
+SubThreadUPS = 0.1
+
+SyncAutoPauseThreshold = 12
+AutoSyncThreshold = 4
 
 def set_fps(n):
-  global FPS, UPS, UPMS
-  FPS = n
-  UPS = int(1000 / (FPS + ContextSwitchOffset))
-  UPMS = UPS / 1000
+  global FPS, UPS, UPMS, AbsUPS
+  FPS    = n
+  AbsUPS = 1 / FPS
+  UPMS   = int(1000 / (FPS + ContextSwitchOffset))
+  UPS    = UPMS / 1000
 
 VK_ESC   = 27
 VK_SPACE = 32
+
+VK_S = 83
+VK_s = 115
 VideoBufferSize = 2
 
 VideoCodec = 'h264'
@@ -72,7 +81,6 @@ TrackbarName   = "frame no."
 
 FLAG_STOP  = False
 FLAG_PAUSE = False
-
 
 def ensure_dir_exist(path):
   path = path.split('/')
@@ -101,6 +109,13 @@ def dump_data(data, fname):
 def load_data(fname):
   with open(fname, 'rb') as fp:
     return pk.load(fp)
+
+def resume(fiber):
+  try:
+    ret = next(fiber)
+    return fiber, ret
+  except StopIteration:
+    return None, None
 
 PlotXseekPos = [175, 1850]
 PlotYseekPos = 20
