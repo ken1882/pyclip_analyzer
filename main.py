@@ -1,3 +1,4 @@
+import sys
 from matplotlib import get_backend
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -8,6 +9,9 @@ import librosa.feature as rft
 from glob import glob
 from os import path
 import _G
+import argv_parse
+
+data = []
 
 def show_fullscreen():
   plt.tight_layout()
@@ -83,12 +87,20 @@ def plot_mfcc(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   return mfccs
 
 def plot_all(y, smp_rate):
+  global data
+
   cnt_col = 1
   plot_func = [plot_waveplot, plot_melspec, plot_rolloff, plot_zcr, plot_mfcc]
+  func_name = ['waveplot', 'melspec', 'rolloff', 'zcr', 'mfcc']
   cnt_row = len(plot_func)
   plt.figure(figsize=_G.get_figsize(cnt_row, cnt_col))
+  
+  _dat = {}
   for i, func in enumerate(plot_func):
-    func(y, smp_rate, cnt_row, cnt_col, i+1)
+    _dat[func_name[i]] = func(y, smp_rate, cnt_row, cnt_col, i+1)
+  data.append(_dat)
+  for k, v in _dat.items():
+    print(f"{k}:\n{v}\n")
 
 def analyze_and_plot_audio(filename, out_filename, overwrite=False):
   if path.exists(out_filename) and not overwrite:
@@ -104,11 +116,23 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
 def get_audio_files(prefix, episode):
   return glob(f"{_G.AudioFolder}/{prefix}/{episode}/*.{_G.AudioFormat}")
 
-_G.ensure_dir_exist(_G.plot_filename(0))
-files = get_audio_files(_G.StreamFilePrefix, _G.StreamFileSuffix)
-flen  = len(files)
-for i, file in enumerate(files):
-  print(f"Analyzing {i+1}/{flen}")
-  analyze_and_plot_audio(file, _G.plot_filename(i), True)
-  # if i >= 2:
-  #   break
+argv_parse.init()
+_G.init()
+print(f"Analyzing stream file index of {_G.StreamFileIndex}")
+
+if _G.FLAG_SAMPLE_PROC:
+  _G.ensure_dir_exist(f"{_G.PositiveSamplePath}/.")
+  files = _G.positive_audios()
+  for i, file in enumerate(files):
+    analyze_and_plot_audio(file, _G.positive_plot_filename(i), True)
+    _G.dump_data(data, _G.make_positive_dataname(i))
+else:
+  _G.ensure_dir_exist(_G.plot_filename(0))
+  files = get_audio_files(_G.StreamFilePrefix, _G.StreamFileSuffix)
+  flen  = len(files)
+  for i, file in enumerate(files):
+    print(f"Analyzing {i+1}/{flen}")
+    analyze_and_plot_audio(file, _G.plot_filename(i), True)
+    # if i >= 2:
+    #   break
+  _G.dump_data(data, _G.get_stream_adump_filename())

@@ -1,4 +1,5 @@
 import os
+from glob import glob
 import pickle as pk
 
 PixPerInch = 96
@@ -18,21 +19,32 @@ def get_figsize(row, col):
 StreamFolder  = "stream"
 AudioFolder   = "audio"
 PlotFolder    = "plot"
+PositiveSampleFolder = "positive_samples"
 
 VideoFormat   = "mp4"
 AudioFormat   = "mp3"
 PlotFormat    = "png"
 OutFormat     = "mkv"
+DataFormat    = "dat"
 
-StreamFileIndex  = 1
-StreamFilePrefix = "5fw_skyfactory"
-StreamFileSuffix = "_ep{0:03}".format(StreamFileIndex)
-PlotFileSuffix   = "_plt{0:03}"
-
-VideoFileStem    = f"{StreamFilePrefix}{StreamFileSuffix}"
-VideoFilename    = f"{StreamFolder}/{VideoFileStem}.{VideoFormat}"
+StreamFileIndex  = 580483021
+StreamFilePrefix = "ESL_DOTA2"
+PlotFileSuffix   = "_plt{0:04}"
 AudioClipSuffix  = "_clp{0:03}"
-FullAudioFilename = f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{VideoFileStem}.{AudioFormat}"
+
+StreamFileSuffix = ''
+VideoFileStem    = ''
+VideoFilename    = ''
+FullAudioFilename  = ''
+PositiveSamplePath = ''
+
+def init():
+  global StreamFileSuffix, VideoFileStem, VideoFilename, FullAudioFilename, PositiveSamplePath
+  StreamFileSuffix = "_vod{}".format(StreamFileIndex)
+  VideoFileStem    = f"{StreamFilePrefix}{StreamFileSuffix}"
+  VideoFilename    = f"{StreamFolder}/{VideoFileStem}.{VideoFormat}"
+  FullAudioFilename  = f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{VideoFileStem}.{AudioFormat}"
+  PositiveSamplePath = f"{PositiveSampleFolder}/{StreamFilePrefix}/{StreamFileSuffix}"
 
 DefaultSR      = 22050
 N_FFT          = 1024
@@ -102,6 +114,23 @@ def audio_filename(idx):
 def out_filename(idx):
   return f"{StreamFolder}/{VideoFileStem}_out.{OutFormat}"
 
+def positive_videos():
+  pattern = f"{PositiveSamplePath}/*.{VideoFormat}"
+  return glob(pattern)
+
+def positive_audios():
+  pattern = f"{PositiveSamplePath}/*.{AudioFormat}"
+  return glob(pattern)
+
+def make_positive_afilename(idx):
+  return f"{PositiveSamplePath}/{idx}.{AudioFormat}"
+
+def make_positive_dataname(idx):
+  return f"{PositiveSamplePath}/positive_audio_{idx}.{DataFormat}"
+
+def positive_plot_filename(idx):
+  return f"{PositiveSamplePath}/plt_{idx}.{PlotFormat}"
+
 def dump_data(data, fname):
   with open(fname, 'wb') as fp:
     pk.dump(data, fp)
@@ -109,6 +138,9 @@ def dump_data(data, fname):
 def load_data(fname):
   with open(fname, 'rb') as fp:
     return pk.load(fp)
+
+def get_stream_adump_filename():
+  return f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/audio_data.{DataFormat}"
 
 def resume(fiber):
   try:
@@ -124,3 +156,5 @@ PlotPlaybackFilename = f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/play
 IndicatorColor = (0,0,0)
 
 PreCacheTime = 3 # sec
+
+FLAG_SAMPLE_PROC = False
