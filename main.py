@@ -97,7 +97,9 @@ def plot_all(y, smp_rate):
   
   _dat = {}
   for i, func in enumerate(plot_func):
-    _dat[func_name[i]] = func(y, smp_rate, cnt_row, cnt_col, i+1)
+    _tmp = func(y, smp_rate, cnt_row, cnt_col, i+1)
+    if i > 0: # no waveplot
+      _dat[func_name[i]] = _tmp
   data.append(_dat)
   for k, v in _dat.items():
     print(f"{k}:\n{v}\n")
@@ -106,6 +108,7 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
   if path.exists(out_filename) and not overwrite:
     print(f"{out_filename} already exists, skipping")
     return
+  print(f"Loading {filename}")
   y, smp_rate = librosa.load(filename)
   print("Audio loaded")
   plot_all(y, smp_rate)
@@ -114,7 +117,7 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
   # show_fullscreen()
 
 def get_audio_files(prefix, episode):
-  return glob(f"{_G.AudioFolder}/{prefix}/{episode}/*.{_G.AudioFormat}")
+  return glob(f"{_G.AudioFolder}/{prefix}/{episode}/_clp*.{_G.AudioFormat}")
 
 argv_parse.init()
 _G.init()
@@ -125,7 +128,7 @@ if _G.FLAG_SAMPLE_PROC:
   files = _G.positive_audios()
   for i, file in enumerate(files):
     analyze_and_plot_audio(file, _G.positive_plot_filename(i), True)
-    _G.dump_data(data, _G.make_positive_dataname(i))
+    _G.dump_data(data[0], _G.make_positive_dataname(i))
 else:
   _G.ensure_dir_exist(_G.plot_filename(0))
   files = get_audio_files(_G.StreamFilePrefix, _G.StreamFileSuffix)

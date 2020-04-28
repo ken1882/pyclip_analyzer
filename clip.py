@@ -29,14 +29,7 @@ argv_parse.init()
 _G.init()
 print(f"Clipping stream file index of {_G.StreamFileIndex}")
 
-if _G.FLAG_SAMPLE_PROC:
-  _G.ensure_dir_exist(f"{_G.PositiveSamplePath}/.")
-  files = _G.positive_videos()  
-  for i, file in enumerate(files):
-    video = load_video(file)
-    export_audio(video.audio, _G.make_positive_afilename(i))
-else:
-  _G.ensure_dir_exist(_G.audio_filename(0))
-  video = load_video(_G.VideoFilename)
-  _G.video_length = vlen = video.duration
-  generate_audio_clips(video.audio)
+_G.ensure_dir_exist(_G.audio_filename(0))
+video = load_video(_G.VideoFilename)
+_G.video_length = vlen = video.duration
+generate_audio_clips(video.audio)

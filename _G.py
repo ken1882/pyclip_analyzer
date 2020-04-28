@@ -45,6 +45,7 @@ def init():
   VideoFilename    = f"{StreamFolder}/{VideoFileStem}.{VideoFormat}"
   FullAudioFilename  = f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{VideoFileStem}.{AudioFormat}"
   PositiveSamplePath = f"{PositiveSampleFolder}/{StreamFilePrefix}/{StreamFileSuffix}"
+  PlotPlaybackFilename = f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/playback{StreamFileSuffix}.dat"
 
 DefaultSR      = 22050
 N_FFT          = 1024
@@ -122,6 +123,10 @@ def positive_audios():
   pattern = f"{PositiveSamplePath}/*.{AudioFormat}"
   return glob(pattern)
 
+def positive_data():
+  pattern = f"{PositiveSamplePath}/*.{DataFormat}"
+  return glob(pattern)
+
 def make_positive_afilename(idx):
   return f"{PositiveSamplePath}/{idx}.{AudioFormat}"
 
@@ -139,6 +144,14 @@ def load_data(fname):
   with open(fname, 'rb') as fp:
     return pk.load(fp)
 
+def all_positive_files():
+  pattern = f"{PositiveSampleFolder}/**/*.dat"
+  return glob(pattern, recursive=True)
+
+def all_data_files():
+  pattern = f"{PlotFolder}/**/*data.dat"
+  return glob(pattern, recursive=True)
+
 def get_stream_adump_filename():
   return f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/audio_data.{DataFormat}"
 
@@ -152,9 +165,12 @@ def resume(fiber):
 PlotXseekPos = [175, 1850]
 PlotYseekPos = 20
 PlotWindowColorThreshold = 0xFF - 0xE0
-PlotPlaybackFilename = f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/playback{StreamFileSuffix}.dat"
 IndicatorColor = (0,0,0)
 
 PreCacheTime = 3 # sec
 
 FLAG_SAMPLE_PROC = False
+FLAG_RETRAIN = False
+
+Categories = ['melspec', 'rolloff', 'zcr', 'mfcc']
+PostiveLabelFilename = "labels.dat"

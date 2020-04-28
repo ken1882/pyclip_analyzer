@@ -11,6 +11,10 @@ from plotplayback import PlotPlaybackRecord
 from threading import Thread
 import plotplayback
 import _G
+import argv_parse
+
+argv_parse.init()
+_G.init()
 
 video  = VideoClip(_G.VideoFilename)
 image  = mp.ImageClip(_G.plot_filename(0))
