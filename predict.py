@@ -5,7 +5,7 @@ import argv_parse
 import sklearn.svm
 from collections import defaultdict
 
-SINGLE_PREDICT = False
+SINGLE_PREDICT = True
 
 argv_parse.init()
 _G.init()
@@ -34,10 +34,10 @@ data = _G.all_data_files()
 
 if SINGLE_PREDICT:
   for file in data:
-    parts  = re.split(r"\\|\/",file)
-    labels = load_postive_label(parts)
-    dat    = _G.load_data(file)
-    twlen  = len(dat)
+    parts   = re.split(r"\\|\/",file)
+    labels  = load_postive_label(parts)
+    dat     = _G.load_data(file)
+    twlen   = len(dat)
     y_train = [1 if i in labels else 0 for i in range(twlen)]
     result  = defaultdict(list)
     for frame in dat:
@@ -62,20 +62,23 @@ if SINGLE_PREDICT:
     print('='*10)
 else:
   x_train  = defaultdict(list)
+  y_train  = []
   for file in data:
     parts  = re.split(r"\\|\/",file)
     labels = load_postive_label(parts)
     dat    = _G.load_data(file)
     twlen  = len(dat)
-    y_train = [1 if i in labels else 0 for i in range(twlen)]
+    y_train.extend([1 if i in labels else 0 for i in range(twlen)])
     result  = defaultdict(list)
     for frame in dat:
       for cat, val in frame.items():
         x_train[cat].append(val)
-  
+  y_train = np.nonzero(y_train)
   for k,v in x_train.items():
     print(k)
     train = np.array(v)
     train = train.reshape(train.shape[0], train.shape[1]*train.shape[2])
     print(np.nonzero(models[k].predict(train)))
     print('-'*10)
+    print("Expected:")
+    print(y_train)

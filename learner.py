@@ -1,9 +1,14 @@
 import _G
+import argv_parse
 import numpy as np
 import re
 from sklearn import svm
 from collections import defaultdict
 
+if __name__ == "__main__":
+  argv_parse.init()
+  _G.init()
+  
 # parts: splited path of the origin data
 #        used to locate postive label file path
 def load_postive_label(parts):
@@ -13,14 +18,13 @@ def load_postive_label(parts):
   ret = []
   with open(filename, 'r') as fp:
     for line in fp:
-      st, ed = line.split(':')
+      st, dur = line.split(':')
       st = int(st) // _G.TimeWindowSize
-      ed = int(ed) // _G.TimeWindowSize
+      ed = (st + int(dur)) // _G.TimeWindowSize
       for i in range(st,ed+1):
         ret.append(i)
   return ret
 
-_G.init()
 data = _G.all_data_files()
 x_train = defaultdict(list)
 y_train = []

@@ -11,6 +11,10 @@ from os import path
 import _G
 import argv_parse
 
+if __name__ == "__main__":
+  argv_parse.init()
+  _G.init()
+
 data = []
 
 def show_fullscreen():
@@ -119,23 +123,25 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
 def get_audio_files(prefix, episode):
   return glob(f"{_G.AudioFolder}/{prefix}/{episode}/_clp*.{_G.AudioFormat}")
 
-argv_parse.init()
-_G.init()
-print(f"Analyzing stream file index of {_G.StreamFileIndex}")
 
-if _G.FLAG_SAMPLE_PROC:
-  _G.ensure_dir_exist(f"{_G.PositiveSamplePath}/.")
-  files = _G.positive_audios()
-  for i, file in enumerate(files):
-    analyze_and_plot_audio(file, _G.positive_plot_filename(i), True)
-    _G.dump_data(data[0], _G.make_positive_dataname(i))
-else:
-  _G.ensure_dir_exist(_G.plot_filename(0))
-  files = get_audio_files(_G.StreamFilePrefix, _G.StreamFileSuffix)
-  flen  = len(files)
-  for i, file in enumerate(files):
-    print(f"Analyzing {i+1}/{flen}")
-    analyze_and_plot_audio(file, _G.plot_filename(i), True)
-    # if i >= 2:
-    #   break
-  _G.dump_data(data, _G.get_stream_adump_filename())
+def start_analyze():
+  print(f"Analyzing stream file index of {_G.StreamFileIndex}")
+  if _G.FLAG_SAMPLE_PROC:
+    _G.ensure_dir_exist(f"{_G.PositiveSamplePath}/.")
+    files = _G.positive_audios()
+    for i, file in enumerate(files):
+      analyze_and_plot_audio(file, _G.positive_plot_filename(i), True)
+      _G.dump_data(data[0], _G.make_positive_dataname(i))
+  else:
+    _G.ensure_dir_exist(_G.plot_filename(0))
+    files = get_audio_files(_G.StreamFilePrefix, _G.StreamFileSuffix)
+    flen  = len(files)
+    for i, file in enumerate(files):
+      print(f"Analyzing {i+1}/{flen}")
+      analyze_and_plot_audio(file, _G.plot_filename(i), True)
+      # if i >= 2:
+      #   break
+    _G.dump_data(data, _G.get_stream_adump_filename())
+
+if __name__ == "__main__":
+  start_analyze()

@@ -4,6 +4,10 @@ import moviepy.editor as mp
 import sys
 import argv_parse
 
+if __name__ == "__main__":
+  argv_parse.init()
+  _G.init()
+  
 def load_video(filename):
   return mp.VideoFileClip(filename)
 
@@ -25,11 +29,10 @@ def generate_audio_clips(audio):
     print(f"Exporting {filename}")
     export_audio(clip, filename)
 
-argv_parse.init()
-_G.init()
-print(f"Clipping stream file index of {_G.StreamFileIndex}")
+if __name__ == "__main__":
+  print(f"Clipping stream file index of {_G.StreamFileIndex}")
 
-_G.ensure_dir_exist(_G.audio_filename(0))
-video = load_video(_G.VideoFilename)
-_G.video_length = vlen = video.duration
-generate_audio_clips(video.audio)
+  _G.ensure_dir_exist(_G.audio_filename(0))
+  video = load_video(_G.VideoFilename)
+  _G.video_length = vlen = video.duration
+  generate_audio_clips(video.audio)
