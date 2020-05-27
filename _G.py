@@ -1,6 +1,7 @@
 import os
 from glob import glob
 import pickle as pk
+import time
 
 PixPerInch = 96
 DPI = 600
@@ -37,13 +38,18 @@ VideoFileStem    = ''
 VideoFilename    = ''
 FullAudioFilename  = ''
 PositiveSamplePath = ''
+PositiveLabelString = ""
+ClipName = ""
+StreamAudioPath = ''
 
 def init():
-  global StreamFileSuffix, VideoFileStem, VideoFilename, FullAudioFilename, PositiveSamplePath
-  StreamFileSuffix = "_vod{}".format(StreamFileIndex)
+  global StreamFileSuffix, VideoFileStem, VideoFilename, FullAudioFilename
+  global PositiveSamplePath, ClipName, StreamAudioPath
+  StreamFileSuffix = f"_vod{StreamFileIndex}_{ClipName}"
   VideoFileStem    = f"{StreamFilePrefix}{StreamFileSuffix}"
   VideoFilename    = f"{StreamFolder}/{VideoFileStem}.{VideoFormat}"
-  FullAudioFilename  = f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{VideoFileStem}.{AudioFormat}"
+  StreamAudioPath    = f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}"
+  FullAudioFilename  = f"{StreamAudioPath}/{VideoFileStem}.{AudioFormat}"
   PositiveSamplePath = f"{PositiveSampleFolder}/{StreamFilePrefix}/{StreamFileSuffix}"
   PlotPlaybackFilename = f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/playback{StreamFileSuffix}.dat"
 
@@ -110,22 +116,25 @@ def plot_filename(idx):
   return f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{PlotFileSuffix.format(idx)}.{PlotFormat}"
 
 def audio_filename(idx):
-  return f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{AudioClipSuffix.format(idx)}.{AudioFormat}"
+  return f"{AudioClipSuffix.format(idx)}.{AudioFormat}"
 
 def out_filename(idx):
   return f"{StreamFolder}/{VideoFileStem}_out.{OutFormat}"
 
 def positive_videos():
   pattern = f"{PositiveSamplePath}/*.{VideoFormat}"
-  return glob(pattern)
+  files = glob(pattern)
+  return [file.replace("\\", "/") for file in files]
 
 def positive_audios():
   pattern = f"{PositiveSamplePath}/*.{AudioFormat}"
-  return glob(pattern)
+  files = glob(pattern)
+  return [file.replace("\\", "/") for file in files]
 
 def positive_data():
   pattern = f"{PositiveSamplePath}/*.{DataFormat}"
-  return glob(pattern)
+  files = glob(pattern)
+  return [file.replace("\\", "/") for file in files]
 
 def make_positive_afilename(idx):
   return f"{PositiveSamplePath}/{idx}.{AudioFormat}"
@@ -181,8 +190,11 @@ FFmpegDownloadCmd = 'ffmpeg -protocol_whitelist "file,http,https,tcp,tls" -y -ss
 StartDownloadTimestamp = 0
 DownloadTimeOffset = [15 * 60, 15 * 60]
 
-PositiveLabelString = ""
-ClipName = ""
-
 def get_download_timeinfo(t):
   return [max(0, t-DownloadTimeOffset[0]), DownloadTimeOffset[0]+DownloadTimeOffset[1]]
+
+def wait(t):
+  time.sleep(t)
+
+def system_command(cmd):
+  os.system(cmd)

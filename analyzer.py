@@ -2,6 +2,7 @@ import sys
 from matplotlib import get_backend
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from threading import Thread
 import numpy as np
 import librosa
 import librosa.display as rdis
@@ -113,7 +114,9 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
     print(f"{out_filename} already exists, skipping")
     return
   print(f"Loading {filename}")
-  y, smp_rate = librosa.load(filename)
+  
+  y, smp_rate = librosa.load(str(filename))
+
   print("Audio loaded")
   plot_all(y, smp_rate)
   save_plot(out_filename)
@@ -124,10 +127,17 @@ def get_audio_files(prefix, episode):
   return glob(f"{_G.AudioFolder}/{prefix}/{episode}/_clp*.{_G.AudioFormat}")
 
 
-def start_analyze():
+def start_analyze(sample_proc=None):
+  global data
   print(f"Analyzing stream file index of {_G.StreamFileIndex}")
+  if sample_proc:
+    _G.FLAG_SAMPLE_PROC = sample_proc
+  data = []
+  
   if _G.FLAG_SAMPLE_PROC:
+    print(f"Analyzing Samples")
     _G.ensure_dir_exist(f"{_G.PositiveSamplePath}/.")
+    _G.wait(1)
     files = _G.positive_audios()
     for i, file in enumerate(files):
       analyze_and_plot_audio(file, _G.positive_plot_filename(i), True)
@@ -142,6 +152,14 @@ def start_analyze():
       # if i >= 2:
       #   break
     _G.dump_data(data, _G.get_stream_adump_filename())
+
+def spawn_analyze_proc(idx, slug, hostname, sample_proc=False):
+  cmd = f"py analyzer.py -i {idx} -c {slug} --host-name {hostname}"
+  if sample_proc:
+    cmd += " -s"
+  _th = Thread(target=_G.system_command, args=(cmd,))
+  _th.start()
+  _th.join()
 
 if __name__ == "__main__":
   start_analyze()

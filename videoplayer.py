@@ -7,7 +7,7 @@ import moviepy.editor as mp
 import numpy as np
 from ffpyplayer.player import MediaPlayer
 import _G
-from _G import audio_filename, out_filename
+from _G import out_filename
 
 TrackBarName   = 'frame no.'
 WindowName     = "test"
