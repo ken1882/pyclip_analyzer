@@ -103,7 +103,7 @@ def plot_all(y, smp_rate):
   _dat = {}
   for i, func in enumerate(plot_func):
     _tmp = func(y, smp_rate, cnt_row, cnt_col, i+1)
-    if i > 0: # no waveplot
+    if not func_name[i] in _G.IgnoredCategories:
       _dat[func_name[i]] = _tmp
   data.append(_dat)
   for k, v in _dat.items():
@@ -141,7 +141,7 @@ def start_analyze(sample_proc=None):
     files = _G.positive_audios()
     for i, file in enumerate(files):
       analyze_and_plot_audio(file, _G.positive_plot_filename(i), True)
-      _G.dump_data(data[0], _G.make_positive_dataname(i))
+      _G.dump_data(data, _G.make_positive_dataname(i))
   else:
     _G.ensure_dir_exist(_G.plot_filename(0))
     files = get_audio_files(_G.StreamFilePrefix, _G.StreamFileSuffix)

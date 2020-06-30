@@ -180,8 +180,11 @@ PreCacheTime = 3 # sec
 
 FLAG_SAMPLE_PROC = False
 FLAG_RETRAIN = False
+FLAG_ALWAYS_YES = False
+FLAG_ALWAYS_NO = False
 
 Categories = ['melspec', 'rolloff', 'zcr', 'mfcc']
+IgnoredCategories = ['waveplot', 'melspec']
 PostiveLabelFilename = "labels.dat"
 
 FFmpegDownloadCmd = 'ffmpeg -protocol_whitelist "file,http,https,tcp,tls" -y -ss ' + \

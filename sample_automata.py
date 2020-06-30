@@ -24,12 +24,13 @@ if __name__ == "__main__":
   argv_parse.init()
   _G.init()
 
-APIHeader = {
-  'Client-ID': '5rd8s9anlosatjam43lh289svux4p3',
-  'Authorization': 'Bearer g1efsf63d24sal5syoeyqshp81i3ue',
-  'Accept': 'application/vnd.twitchtv.v5+json'
-}
+APIHeader = {}
 
+# Load API Header settings
+with open("twitch_api.key", 'r') as fp:
+  for line in fp:
+    key, val = line.rstrip().split(":")
+    APIHeader[key] = val
 
 MediaHeaders = {
   'Client-ID': 'kimne78kx3ncx6brgo4mv6wki5h1ko'
@@ -180,7 +181,8 @@ def start_sample_process():
   
   errno,clip_fname = download_clip(id, slug)
   
-  inp = ''
+  inp = 'Y' if _G.FLAG_ALWAYS_YES else ''
+  inp = 'N' if _G.FLAG_ALWAYS_NO else ''
   if errno == ERRNO_EXIST:
     print(f"{clip_fname} already downloaded, skip")
     while inp != 'Y' and inp != 'N':
@@ -211,7 +213,8 @@ def start_sample_process():
     except Exception:
       _G.wait(0.3)
   
-  inp = ''
+  inp = 'Y' if _G.FLAG_ALWAYS_YES else ''
+  inp = 'N' if _G.FLAG_ALWAYS_NO else ''
   if errno == ERRNO_EXIST:
     while inp != 'Y' and inp != 'N':
       inp = input("Stream video already exists, process anyway? (Y/N): ").upper()

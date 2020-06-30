@@ -8,5 +8,6 @@ __pycache__/*
 *test*
 *.dat
 *.mod
+*.key
 
 untitled
