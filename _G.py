@@ -193,6 +193,8 @@ FFmpegDownloadCmd = 'ffmpeg -protocol_whitelist "file,http,https,tcp,tls" -y -ss
 StartDownloadTimestamp = 0
 DownloadTimeOffset = [15 * 60, 15 * 60]
 
+PYTHON_COMMAND = "python3"
+
 def get_download_timeinfo(t):
   return [max(0, t-DownloadTimeOffset[0]), DownloadTimeOffset[0]+DownloadTimeOffset[1]]
 

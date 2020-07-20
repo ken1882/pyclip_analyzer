@@ -154,7 +154,7 @@ def start_analyze(sample_proc=None):
     _G.dump_data(data, _G.get_stream_adump_filename())
 
 def spawn_analyze_proc(idx, slug, hostname, sample_proc=False):
-  cmd = f"py analyzer.py -i {idx} -c {slug} --host-name {hostname}"
+  cmd = f"{_G.PYTHON_COMMAND} analyzer.py -i {idx} -c {slug} --host-name {hostname}"
   if sample_proc:
     cmd += " -s"
   _th = Thread(target=_G.system_command, args=(cmd,))

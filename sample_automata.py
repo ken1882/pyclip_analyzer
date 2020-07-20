@@ -29,8 +29,10 @@ APIHeader = {}
 # Load API Header settings
 with open("twitch_api.key", 'r') as fp:
   for line in fp:
-    key, val = line.rstrip().split(":")
-    APIHeader[key] = val
+    if not line.strip():
+      continue
+    key, val = line.split(":")
+    APIHeader[key.strip()] = val.strip()
 
 MediaHeaders = {
   'Client-ID': 'kimne78kx3ncx6brgo4mv6wki5h1ko'
@@ -111,6 +113,7 @@ def download_m3u8(id, slug, start_t, duration, _async=False, thread_id=0):
 def download_clip(id, slug):
   print("Waiting Twitch API...")
   data = get_helixclip_info(slug).json()
+  
   data = data['data'][0]
   print(f"Retrived data: {data}")
   
@@ -150,7 +153,7 @@ def generate_label(clip_fname, slug, start_t):
   else:
     all_data = []
     with open(label_filename, 'r') as fp:
-      all_data = json.load()
+      all_data = json.load(fp)
     
     # overwrite exist item
     for idx, item in enumerate(all_data):
@@ -181,8 +184,12 @@ def start_sample_process():
   
   errno,clip_fname = download_clip(id, slug)
   
-  inp = 'Y' if _G.FLAG_ALWAYS_YES else ''
-  inp = 'N' if _G.FLAG_ALWAYS_NO else ''
+  inp = ''
+  if _G.FLAG_ALWAYS_YES:
+    inp = 'Y'
+  elif _G.FLAG_ALWAYS_NO:
+    inp = 'N'
+  
   if errno == ERRNO_EXIST:
     print(f"{clip_fname} already downloaded, skip")
     while inp != 'Y' and inp != 'N':
@@ -213,8 +220,12 @@ def start_sample_process():
     except Exception:
       _G.wait(0.3)
   
-  inp = 'Y' if _G.FLAG_ALWAYS_YES else ''
-  inp = 'N' if _G.FLAG_ALWAYS_NO else ''
+  inp = ''
+  if _G.FLAG_ALWAYS_YES:
+    inp = 'Y'
+  elif _G.FLAG_ALWAYS_NO:
+    inp = 'N'
+    
   if errno == ERRNO_EXIST:
     while inp != 'Y' and inp != 'N':
       inp = input("Stream video already exists, process anyway? (Y/N): ").upper()
