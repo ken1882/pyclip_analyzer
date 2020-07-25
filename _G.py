@@ -124,17 +124,17 @@ def out_filename(idx):
 def positive_videos():
   pattern = f"{PositiveSamplePath}/*.{VideoFormat}"
   files = glob(pattern)
-  return [file.replace("\\", "/") for file in files]
+  return sorted([file.replace("\\", "/") for file in files])
 
 def positive_audios():
   pattern = f"{PositiveSamplePath}/*.{AudioFormat}"
   files = glob(pattern)
-  return [file.replace("\\", "/") for file in files]
+  return sorted([file.replace("\\", "/") for file in files])
 
 def positive_data():
   pattern = f"{PositiveSamplePath}/*.{DataFormat}"
   files = glob(pattern)
-  return [file.replace("\\", "/") for file in files]
+  return sorted([file.replace("\\", "/") for file in files])
 
 def make_positive_afilename(idx):
   return f"{PositiveSamplePath}/{idx}.{AudioFormat}"
@@ -155,11 +155,11 @@ def load_data(fname):
 
 def all_positive_files():
   pattern = f"{PositiveSampleFolder}/**/*.dat"
-  return glob(pattern, recursive=True)
+  return sorted(glob(pattern, recursive=True))
 
 def all_data_files():
   pattern = f"{PlotFolder}/**/*data.dat"
-  return glob(pattern, recursive=True)
+  return sorted(glob(pattern, recursive=True))
 
 def get_stream_adump_filename():
   return f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/audio_data.{DataFormat}"
@@ -184,7 +184,7 @@ FLAG_ALWAYS_YES = False
 FLAG_ALWAYS_NO = False
 
 Categories = ['melspec', 'rolloff', 'zcr', 'mfcc']
-IgnoredCategories = ['waveplot', 'melspec']
+IgnoredCategories = ['waveplot', 'melspec', 'rolloff', 'zcr']
 PostiveLabelFilename = "labels.dat"
 
 FFmpegDownloadCmd = 'ffmpeg -protocol_whitelist "file,http,https,tcp,tls" -y -ss ' + \

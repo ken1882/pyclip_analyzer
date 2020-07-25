@@ -8,7 +8,7 @@ if __name__ == "__main__":
   _G.init()
 
   path  = input("Enter path: ")
-  files = glob(f"{path}/*audio*.dat")
+  files = sorted(glob(f"{path}/*audio*.dat"))
   for file in files:
     print(f"Loading {file}")
     data = _G.load_data(file)  

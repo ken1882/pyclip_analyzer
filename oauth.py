@@ -1,7 +1,7 @@
 import os
 import requests
 
-FLAG_REFRESH = False
+FLAG_REFRESH = True
 APIHeader = {}
 
 
@@ -24,17 +24,17 @@ CodeHeader = {
   "response_type": 'code',
   "scope": "viewing_activity_read"
 }
-CodeUri = "https://id.twitch.tv/oauth2/authorize?" + \
+
+if not FLAG_REFRESH:
+  CodeUri = "https://id.twitch.tv/oauth2/authorize?" + \
           f"client_id={APIHeader['client_id']}&" + \
           f"redirect_uri=http://localhost&" + \
           f"response_type=code&" + \
           f"scope=viewing_activity_read"
 
-print(CodeUri)
-APIHeader['code'] = input("Please enter the code: ").strip()
-APIHeader['redirect_uri'] = "http://localhost"
-
-if not FLAG_REFRESH:
+  print(CodeUri)
+  APIHeader['code'] = input("Please enter the code: ").strip()
+  APIHeader['redirect_uri'] = "http://localhost"
   APIHeader['grant_type'] = "authorization_code"
   print(APIHeader)
   resp = requests.post("https://id.twitch.tv/oauth2/token", data=APIHeader)
@@ -42,4 +42,5 @@ if not FLAG_REFRESH:
 else:
   APIHeader['grant_type'] = "refresh_token"
   print(APIHeader)
-  resp = requests.post("", data=APIHeader)
+  resp = requests.post("https://id.twitch.tv/oauth2/token", data=APIHeader)
+  print(resp.json())

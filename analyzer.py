@@ -124,7 +124,7 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
   # show_fullscreen()
 
 def get_audio_files(prefix, episode):
-  return glob(f"{_G.AudioFolder}/{prefix}/{episode}/_clp*.{_G.AudioFormat}")
+  return sorted(glob(f"{_G.AudioFolder}/{prefix}/{episode}/_clp*.{_G.AudioFormat}"))
 
 
 def start_analyze(sample_proc=None):

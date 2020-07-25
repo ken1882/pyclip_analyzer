@@ -36,7 +36,7 @@ data = _G.all_data_files()
 
 models = {
   "SVM": _G.load_data("svm.mod"),
-  "KNN": _G.load_data("knn.mod")
+  # "KNN": _G.load_data("knn.mod")
 }
 
 if SINGLE_PREDICT:

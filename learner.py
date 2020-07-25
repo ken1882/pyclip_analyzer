@@ -51,13 +51,17 @@ for file in data:
     base = len(y_train)
     y_train.extend(tmp_y)
     for idx,frame in enumerate(dat):
-      if frame[_G.Categories[0]].shape != dat[0][_G.Categories[0]].shape:
+      if frame[_G.Categories[-1]].shape != dat[0][_G.Categories[-1]].shape:
         print(f"Frame#{base+idx} is incomplete, discard")
         incom_idx.append(base+idx)
         continue
       
       data_ok = False
       for cat in _G.Categories:
+        try:
+          frame[cat]
+        except KeyError:
+          continue
         infidx = np.where(np.isinf(frame[cat]))
         if len(infidx[0]) > 0:
           print(f"WARNING: INF value in frame#{idx} of {cat} in {file}")
@@ -89,8 +93,7 @@ print("----- Training Proc -----")
 for cat in _G.Categories:
   if cat in _G.IgnoredCategories:
     continue
-  if cat == 'mfcc':
-    continue
+
   clsier_svm[cat] = GridSearchCV(estimator=svm.SVC(), param_grid=parm_svm, scoring='accuracy',cv=5,verbose=VERBOSE,n_jobs=N_JOBS)
   clsier_knn[cat] = GridSearchCV(estimator=KNeighborsClassifier(), param_grid=parm_knn, scoring='accuracy',cv=5,verbose=VERBOSE,n_jobs=N_JOBS)
   print(cat)
@@ -108,13 +111,15 @@ for cat in _G.Categories:
   # print("Best params: ", clsier_knn[cat].best_params_)
   
 print("Dumping data")
-_G.dump_data(clsier_svm, f"svm2.mod")
+_G.dump_data(clsier_svm, f"svm.mod")
 # _G.dump_data(clsier_knn, f"knn.mod")
-# for cat in _G.Categories:
-#   if cat in _G.IgnoredCategories:
-#     continue
-#   print("Cross-vaildating")
-#   score_svm = cross_val_score(clsier_svm[cat], train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
-#   score_knn = cross_val_score(clsier_knn[cat], train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
-#   print("SVM score: ", score_svm)
-#   print("KNN score: ", score_knn)
+exit()
+
+for cat in _G.Categories:
+  if cat in _G.IgnoredCategories:
+    continue
+  print("Cross-vaildating")
+  score_svm = cross_val_score(clsier_svm[cat], train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
+  score_knn = cross_val_score(clsier_knn[cat], train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
+  print("SVM score: ", score_svm)
+  print("KNN score: ", score_knn)

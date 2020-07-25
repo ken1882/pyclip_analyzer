@@ -18,7 +18,7 @@ def build_playback_archive():
     print(f"Archive {filename} already exists")
     return _G.load_data(filename)
   print(f"Building archive playback for '{filename}'")
-  files  = glob_plots(filename)
+  files  = sorted(glob_plots(filename))
   cur_timestamp = 0
   data   = []
   _len   = len(files)
@@ -34,7 +34,7 @@ def build_playback_archive():
 
 def glob_plots(filename):
   path = "/".join(filename.split('/')[:-1])
-  return glob(f"{path}/*.{_G.PlotFormat}")
+  return sorted(glob(f"{path}/*.{_G.PlotFormat}"))
   
 RGB2GS_MAT = np.array([0.3,0.4,0.3]).T
 def transform_rgb2gs(img):
