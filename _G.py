@@ -59,9 +59,9 @@ N_MELS         = 128
 N_MFCC         = 40
 HopLen         = 512
 RollPercent    = 0.95
-ZCR_Offset     = 0
+ZCR_Offset     = 10
 ZCR_FrameLen   = 512
-ZCR_Center     = True
+ZCR_Center     = False
 TimeWindowSize = 30
 
 PLT_XLIM = int(DefaultSR * TimeWindowSize / HopLen + 0.5)
@@ -184,7 +184,7 @@ FLAG_ALWAYS_YES = False
 FLAG_ALWAYS_NO = False
 
 Categories = ['melspec', 'rolloff', 'zcr', 'mfcc']
-IgnoredCategories = ['waveplot', 'melspec', 'rolloff', 'zcr']
+IgnoredCategories = ['waveplot', 'melspec']
 PostiveLabelFilename = "labels.dat"
 
 FFmpegDownloadCmd = 'ffmpeg -protocol_whitelist "file,http,https,tcp,tls" -y -ss ' + \

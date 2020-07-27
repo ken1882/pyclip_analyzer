@@ -51,7 +51,7 @@ def plot_waveplot(y, smp_rate, raw=3, col=1, idx=1, **kwargs):
   return y
 
 def plot_rolloff(y, smp_rate, row=3, col=1, idx=3, **kwargs):
-  rf = rft.spectral_rolloff(y, smp_rate, n_fft=_G.N_FFT, roll_percent=_G.RollPercent, hop_length=_G.HopLen)
+  rf = rft.spectral_rolloff(y, smp_rate, n_fft=_G.N_FFT, roll_percent=_G.RollPercent, hop_length=_G.HopLen, center=_G.ZCR_Center)
   plt.subplot(row, col, idx)
   plt.semilogy(rf.T, label='Roll-off freq.')
   plt.ylabel('Hz')
@@ -83,7 +83,7 @@ def plot_zcr(y, smp_rate, row=3, col=1, idx=2, **kwargs):
   return zcrs
 
 def plot_mfcc(y, smp_rate, row=3, col=1, idx=2, **kwargs):
-  mfccs = rft.mfcc(y, sr=smp_rate, n_mfcc=_G.N_MFCC)
+  mfccs = rft.mfcc(y, sr=smp_rate, n_mfcc=_G.N_MFCC, hop_length=_G.HopLen, n_fft=_G.N_FFT)
   plt.subplot(row, col, idx)
   rdis.specshow(mfccs, x_axis='time')
   cax = get_colorbar_axis()

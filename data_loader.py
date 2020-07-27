@@ -3,10 +3,13 @@ import argv_parse
 import pickle as pk
 from glob import glob
 
+# positive_samples/ESL_DOTA2/_vod580483021_ClumsyTangibleElkDogFace
+# positive_samples/ESL_DOTA2/_vod73096810_ConcernedSmellyWaterKlappa
+
 if __name__ == "__main__":
   argv_parse.init()
   _G.init()
-
+  print(_G.positive_audios())
   path  = input("Enter path: ")
   files = sorted(glob(f"{path}/*audio*.dat"))
   for file in files:
