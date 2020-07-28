@@ -11,7 +11,9 @@ if __name__ == "__main__":
   _G.init()
   print(_G.positive_audios())
   path  = input("Enter path: ")
-  files = sorted(glob(f"{path}/*audio*.dat"))
+  path  = f"{path}/*audio*.dat"
+  print("Globbing", path)
+  files = sorted(glob(path))
   for file in files:
     print(f"Loading {file}")
     data = _G.load_data(file)  

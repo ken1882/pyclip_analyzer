@@ -10,7 +10,7 @@ from collections import defaultdict
 if __name__ == "__main__":
   argv_parse.init()
   _G.init()
-  _G.IgnoredCategories += ['rolloff', 'zcr']
+  _G.IgnoredCategories += ['zcr', 'mfcc']
 
 # parts: splited path of the origin data
 #        used to locate postive label file path
@@ -35,8 +35,8 @@ def load_postive_label(parts):
 data = _G.all_data_files()
 
 models = {
-  "SVM": _G.load_data("svm_mfcc.mod"),
-  # "KNN": _G.load_data("knn_mfcc.mod")
+  "SVM": _G.load_data("svm_rolloff.mod"),
+  "KNN": _G.load_data("knn_rolloff.mod")
 }
 
 for mod_name, model in models.items():
@@ -52,6 +52,7 @@ for mod_name, model in models.items():
     result  = defaultdict(list)
     for frame in dat:
       for cat, val in frame.items():
+
         if cat in _G.IgnoredCategories:
           continue
         
@@ -59,10 +60,16 @@ for mod_name, model in models.items():
           train_n = model.best_estimator_.shape_fit_[-1]
         elif mod_name == "KNN":
           train_n = model.best_estimator_._tree.data.shape[-1]
-        dim_n = train_n // val.shape[0] - val.shape[-1]
-        val = np.hstack((val, np.zeros((val.shape[0], dim_n))))
+          
+        dim_n = train_n - val.shape[0]
+        if dim_n > 0:
+          val = np.vstack((val, np.zeros((dim_n, 1))))
         train = val.reshape(1, -1)
-        result[cat].append(model.predict(train)[0])
+        try:
+          result[cat].append(model.predict(train)[0])
+        except ValueError:
+          result[cat].append(0)
+        
     print(file)
     for k,ar in result.items():
       print(k)
