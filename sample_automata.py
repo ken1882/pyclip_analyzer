@@ -9,6 +9,8 @@ from random import randint
 from pprint import PrettyPrinter
 from threading import Thread
 import moviepy.editor as mp
+import traceback
+import time
 
 import _G
 import argv_parse
@@ -177,8 +179,16 @@ def start_sample_process():
   st_time = timeit.default_timer()
 
   slug = _G.ClipName
-  data = getkarkan_clip_info(slug).json()
-  id   = get_id_from_data(data)
+  data = None
+  _cnt = 0
+  while not data and not data.json() and _cnt < 3:
+    _cnt += 1
+    data  = getkarkan_clip_info(slug).json()
+    if not data.json():
+      print(f"Failed to get clip data ({data})...retry({_cnt})")
+      time.sleep(1)
+  
+  id = get_id_from_data(data)
   start_t = get_ori_timestamp(data)
   
   _G.StreamFileIndex  = int(id)
@@ -244,4 +254,10 @@ def start_sample_process():
   
 # py sample_automata.py -c SecretiveLazyVelociraptorBCWarrior
 if __name__ == "__main__":
-  start_sample_process()
+  try:
+    start_sample_process()
+  except Exception as err:
+    print("An error occurred while downloading!")
+    print(err, traceback.format_exc())
+    with open("error_download.txt", 'a') as fp:
+      fp.write(f"{_G.ClipName}\n")
