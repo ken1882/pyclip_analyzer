@@ -25,22 +25,26 @@ CodeHeader = {
   "scope": "viewing_activity_read"
 }
 
-if not FLAG_REFRESH:
-  CodeUri = "https://id.twitch.tv/oauth2/authorize?" + \
-          f"client_id={APIHeader['client_id']}&" + \
-          f"redirect_uri=http://localhost&" + \
-          f"response_type=code&" + \
-          f"scope=viewing_activity_read"
-
-  print(CodeUri)
-  APIHeader['code'] = input("Please enter the code: ").strip()
-  APIHeader['redirect_uri'] = "http://localhost"
-  APIHeader['grant_type'] = "authorization_code"
-  print(APIHeader)
-  resp = requests.post("https://id.twitch.tv/oauth2/token", data=APIHeader)
-  print(resp.json())
-else:
+def refresh_token():
   APIHeader['grant_type'] = "refresh_token"
-  print(APIHeader)
   resp = requests.post("https://id.twitch.tv/oauth2/token", data=APIHeader)
-  print(resp.json())
+  return resp.json()
+
+if __name__ == "__main__":
+  if not FLAG_REFRESH:
+    CodeUri = "https://id.twitch.tv/oauth2/authorize?" + \
+            f"client_id={APIHeader['client_id']}&" + \
+            f"redirect_uri=http://localhost&" + \
+            f"response_type=code&" + \
+            f"scope=viewing_activity_read"
+
+    print(CodeUri)
+    APIHeader['code'] = input("Please enter the code: ").strip()
+    APIHeader['redirect_uri'] = "http://localhost"
+    APIHeader['grant_type'] = "authorization_code"
+    print(APIHeader)
+    resp = requests.post("https://id.twitch.tv/oauth2/token", data=APIHeader)
+    print(resp.json())
+  else:
+    print(APIHeader)
+    print(refresh_token())

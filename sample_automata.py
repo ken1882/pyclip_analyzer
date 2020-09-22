@@ -14,6 +14,7 @@ import _G
 import argv_parse
 import clip
 import analyzer
+import oauth
 
 ERRNO_OK    = 0
 ERRNO_EXIST = 1
@@ -111,9 +112,12 @@ def download_m3u8(id, slug, start_t, duration, _async=False, thread_id=0):
     _th.join()  
 
 def download_clip(id, slug):
+  print("Refreshing Twitch API...")
+  access_token = oauth.refresh_token()['access_token']
+  APIHeader['Authorization'] = f"Bearer {access_token}"
+
   print("Waiting Twitch API...")
   data = get_helixclip_info(slug).json()
-  
   data = data['data'][0]
   print(f"Retrived data: {data}")
   
