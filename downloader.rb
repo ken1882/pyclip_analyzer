@@ -103,7 +103,7 @@ FancyTacitPepperBrainSlug
 KitschyTriangularChipmunkKlappa
 PoisedVictoriousVanillaMcaT
 DeliciousMoistCheddarUWot
-TacitRamshackleBulgogiBudStar
+TacitRamshackleBulgogiBudStar	
 ).select{|c| !c.strip.empty?}
 
 WORKER_CNT = 2
