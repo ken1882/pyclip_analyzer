@@ -182,10 +182,10 @@ def start_sample_process():
   data = None
   _cnt = 0
   
-  while (not data or not data.json()) and _cnt < 3:
+  while not data and _cnt < 3:
     _cnt += 1
     data  = getkarkan_clip_info(slug).json()
-    if not data or not data.json():
+    if not data:
       print(f"Failed to get clip data ({data})...retry({_cnt})")
       time.sleep(1)
   
