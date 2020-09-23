@@ -110,7 +110,7 @@ WORKER_CNT = 2
 
 def spawn_automata(_clips, worker_id=0)
 	_clips.each do |clip|
-		cmd = "python3 sample_automata.py -c #{clip} -y"
+		cmd = "python3 sample_automata.py -c #{clip} #{ARGV[0] == '-n' ? '-n' : '-y'}"
 		puts "[Worker #{worker_id}]: #{cmd}"
 		system(cmd)
 	end

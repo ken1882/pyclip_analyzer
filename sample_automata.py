@@ -188,7 +188,10 @@ def start_sample_process():
     if not data:
       print(f"Failed to get clip data ({data})...retry({_cnt})")
       time.sleep(1)
-  
+  if not data['vod']:
+    print("Source unavailable, throwing")
+    raise RuntimeError("Source VOD unavailable")
+
   id = get_id_from_data(data)
   start_t = get_ori_timestamp(data)
   
@@ -261,4 +264,4 @@ if __name__ == "__main__":
     print("An error occurred while downloading!")
     print(err, traceback.format_exc())
     with open("error_download.txt", 'a') as fp:
-      fp.write(f"{_G.ClipName}\n")
+      fp.write(f"{_G.ClipName} {err}\n")
