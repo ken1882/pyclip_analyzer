@@ -14,7 +14,7 @@ VERBOSE = 1
 N_JOBS  = 1
 Category = 'zcr'
 TRAIN_SVM = True
-TRAIN_KNN = False
+TRAIN_KNN = True
 
 if __name__ == "__main__":
   argv_parse.init()
@@ -125,7 +125,7 @@ if TRAIN_KNN:
   print("Dumping KNN data")
   _G.dump_data(clsier_knn, f"knn_zcr.mod")
 
-exit()
+#exit()
 
 print("===== Start Cross-Vaildating =====")
 

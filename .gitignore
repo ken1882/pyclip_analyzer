@@ -10,5 +10,6 @@ debug/*
 *.dat
 *.mod
 *.key
+*.log
 error_download.txt
 untitled

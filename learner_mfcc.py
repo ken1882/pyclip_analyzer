@@ -13,6 +13,8 @@ from pprint import pprint
 VERBOSE = 1
 N_JOBS  = 1
 Category = 'mfcc'
+TRAIN_SVM = True
+TRAIN_KNN = True
 
 if __name__ == "__main__":
   argv_parse.init()
@@ -98,21 +100,22 @@ x_train = np.array(x_train, dtype=object)
 x_train = x_train.reshape(x_train.shape[0], x_train.shape[1]*x_train.shape[2])
 print(f"x_trained reshped for SVM: {x_train.shape}")
 
-print("Training SVM")
-clsier_svm.fit(x_train, y_train)
-print("Best params: ", clsier_svm.best_params_)
-print("Result:")
-pprint(clsier_svm.cv_results_)
+if TRAIN_SVM:
+  print("Training SVM")
+  clsier_svm.fit(x_train, y_train)
+  print("Best params: ", clsier_svm.best_params_)
+  print("Result:")
+  pprint(clsier_svm.cv_results_)
+  print("Dumping SVM")
+  _G.dump_data(clsier_svm, "svm_mfcc.mod")
 
-# print("Training KNN")
-# clsier_knn.fit(train, y_train)
-# print("Best params: ", clsier_knn.best_params_)
-# print("Result:")
-# pprint(clsier_svm.cv_results_)
-
-print("Dumping data")
-_G.dump_data(clsier_svm, f"svm_mfcc.mod")
-# _G.dump_data(clsier_knn, f"knn_mfcc.mod")
+if TRAIN_KNN:
+  print("Training KNN")
+  clsier_knn.fit(train, y_train)
+  print("Best params: ", clsier_knn.best_params_)
+  print("Result:")
+  pprint(clsier_svm.cv_results_)
+  _G.dump_data(clsier_knn, f"knn_mfcc.mod")
 
 exit()
 
@@ -120,6 +123,6 @@ print("===== Start Cross-Vaildating =====")
 
 print(f"Cross-vaildating {Category}")
 score_svm = cross_val_score(clsier_svm, x_train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
-# score_knn = cross_val_score(clsier_knn, train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
+score_knn = cross_val_score(clsier_knn, train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
 print("SVM score: ", score_svm)
 # print("KNN score: ", score_knn)

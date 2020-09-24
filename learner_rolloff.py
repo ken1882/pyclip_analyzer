@@ -41,7 +41,7 @@ def load_postive_label(parts):
         ret[slug].append(i)
   return ret
 
-data = _G.all_data_files()[:10]
+data = _G.all_data_files()
 x_train = []
 y_train = []
 base = 0
