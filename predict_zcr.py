@@ -35,8 +35,8 @@ def load_postive_label(parts):
 data = _G.all_data_files()
 
 models = {
-  # "SVM": _G.load_data("svm_zcr.mod"),
-  "KNN": _G.load_data("knn_zcr.mod")
+  "SVM": _G.load_data("svm_zcr.mod"),
+  #"KNN": _G.load_data("knn_zcr.mod")
 }
 
 for mod_name, model in models.items():

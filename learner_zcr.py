@@ -13,13 +13,13 @@ from pprint import pprint
 VERBOSE = 1
 N_JOBS  = 1
 Category = 'zcr'
-TRAIN_SVM = False
-TRAIN_KNN = True
+TRAIN_SVM = True
+TRAIN_KNN = False
 
 if __name__ == "__main__":
   argv_parse.init()
   _G.init()
-  N_JOBS = 4
+  N_JOBS = -1
   
 # parts: splited path of the origin data
 #        used to locate postive label file path
@@ -77,13 +77,14 @@ for file in data:
       
       nlen = len(frame[Category][0])
       max_nsize = max_nsize if max_nsize >= nlen else nlen
-      x_train.append(frame[Category])
+      x_train.append(frame[Category] * 10)
 
 for i in reversed(incom_idx):
   del y_train[i]
 
 
 y_train = np.array(y_train).flatten()
+print(f"Sample Size: {len(data)}")
 print(f"Yt: {y_train.shape}\n{y_train}\n{np.nonzero(y_train)}\n\n")
 
 for idx, freq_col in enumerate(x_train):
@@ -123,7 +124,6 @@ if TRAIN_KNN:
   pprint(clsier_knn.cv_results_)
   print("Dumping KNN data")
   _G.dump_data(clsier_knn, f"knn_zcr.mod")
-
 
 exit()
 

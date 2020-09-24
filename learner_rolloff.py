@@ -19,7 +19,7 @@ TRAIN_KNN = True
 if __name__ == "__main__":
   argv_parse.init()
   _G.init()
-  N_JOBS = 4
+  N_JOBS = -1
   
 # parts: splited path of the origin data
 #        used to locate postive label file path
@@ -41,7 +41,7 @@ def load_postive_label(parts):
         ret[slug].append(i)
   return ret
 
-data = _G.all_data_files()
+data = _G.all_data_files()[:10]
 x_train = []
 y_train = []
 base = 0
@@ -81,6 +81,7 @@ for i in reversed(incom_idx):
   del y_train[i]
 
 y_train = np.array(y_train).flatten()
+print(f"Sample Size: {len(data)}")
 print(f"Yt: {y_train.shape}\n{y_train}\n{np.nonzero(y_train)}\n\n")
 
 for idx, freq_col in enumerate(x_train):
@@ -122,7 +123,7 @@ if TRAIN_KNN:
   print("Dumping KNN data")
   _G.dump_data(clsier_knn, f"knn_rolloff.mod")
 
-exit()
+# exit()
 
 print("===== Start Cross-Vaildating =====")
 

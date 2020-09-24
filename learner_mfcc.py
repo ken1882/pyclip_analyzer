@@ -17,7 +17,7 @@ Category = 'mfcc'
 if __name__ == "__main__":
   argv_parse.init()
   _G.init()
-  N_JOBS = 4
+  N_JOBS = 1
   
 # parts: splited path of the origin data
 #        used to locate postive label file path

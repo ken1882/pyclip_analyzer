@@ -32,7 +32,7 @@ def load_postive_label(parts):
         ret[slug].append(i)
   return ret[next(iter(ret))]
 
-data = _G.all_data_files()
+data = _G.all_data_files()[:10]
 
 models = {
   "SVM": _G.load_data("svm_rolloff.mod"),
