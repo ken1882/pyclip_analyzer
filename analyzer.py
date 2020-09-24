@@ -1,4 +1,6 @@
 import sys
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import get_backend
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable

@@ -7,14 +7,17 @@ from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestRegressor
 from collections import defaultdict
 from pprint import pprint
 
 VERBOSE = 1
 N_JOBS  = 1
+GRID_CV = 5
 Category = 'zcr'
 TRAIN_SVM = True
 TRAIN_KNN = True
+TRAIN_RFR = True
 
 if __name__ == "__main__":
   argv_parse.init()
@@ -97,11 +100,13 @@ kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
 parm_svm = {'kernel':['linear', 'rbf', 'poly', 'sigmoid'], 'C':[0.01, 0.1, 1, 10]}
 parm_knn = {'n_neighbors':[1,3,5,7,9], 'algorithm': ['ball_tree', 'kd_tree', 'brute']}
+parm_rfr = {'n_estimators':[10,25,50,75,100], 'bootstrap': [True, False], 'max_depth':[None,3,5,7,10,16], 'min_samples_split': [2,3,5,10,20,30]}
 
 print("----- Training Proc -----")
 
 clsier_svm = GridSearchCV(estimator=svm.SVC(), param_grid=parm_svm, scoring='accuracy',cv=5,verbose=VERBOSE,n_jobs=N_JOBS)
 clsier_knn = GridSearchCV(estimator=KNeighborsClassifier(), param_grid=parm_knn, scoring='accuracy',cv=5,verbose=VERBOSE,n_jobs=N_JOBS)
+clsier_rfr = GridSearchCV(estimator=RandomForestRegressor(), param_grid=parm_rfr, scoring='explained_variance',cv=GRID_CV,verbose=VERBOSE,n_jobs=N_JOBS)
 
 train = np.array(x_train, dtype=object)
 train = train.reshape(train.shape[0], train.shape[1]*train.shape[2])
@@ -125,6 +130,13 @@ if TRAIN_KNN:
   print("Dumping KNN data")
   _G.dump_data(clsier_knn, f"knn_zcr.mod")
 
+if TRAIN_RFR:
+  print("Training Random Forest")
+  clsier_rfr.fit(x_train, y_train)
+  print("Best params: ", clsier_rfr.best_params_)
+  print("Result:")
+  pprint(clsier_rfr.cv_results_)
+  _G.dump_data(clsier_rfr, f"rfr_zcr.mod")
 #exit()
 
 print("===== Start Cross-Vaildating =====")
@@ -138,3 +150,7 @@ if TRAIN_SVM:
 if TRAIN_KNN:
   score_knn = cross_val_score(clsier_knn, train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
   print("KNN score: ", score_knn)
+
+if TRAIN_RFR:
+  score_rfr = cross_val_score(clsier_rfr, x_train, y_train, scoring='explained_variance', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
+  print("Random Forest Regressor score: ", score_rfr)

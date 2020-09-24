@@ -106,7 +106,7 @@ DeliciousMoistCheddarUWot
 TacitRamshackleBulgogiBudStar	
 ).select{|c| !c.strip.empty?}
 
-WORKER_CNT = 2
+WORKER_CNT = 3
 
 def spawn_automata(_clips, worker_id=0)
 	_clips.each do |clip|
@@ -116,10 +116,14 @@ def spawn_automata(_clips, worker_id=0)
 	end
 end
 
-n = clips.size
-queues = Array.new(WORKER_CNT){|i| clips[i*n/WORKER_CNT...(i+1)*n/WORKER_CNT]}
-threads = []
-WORKER_CNT.times do |i|
-	threads << Thread.new{spawn_automata(queues[i], i)}.run
+if WORKER_CNT > 1
+	n = clips.size
+	queues = Array.new(WORKER_CNT){|i| clips[i*n/WORKER_CNT...(i+1)*n/WORKER_CNT]}
+	threads = []
+	WORKER_CNT.times do |i|
+		threads << Thread.new{spawn_automata(queues[i], i)}.run
+	end
+	threads.each{|th| th.join}
+else
+	spawn_automata(clips)
 end
-threads.each{|th| th.join}
