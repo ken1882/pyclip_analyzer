@@ -108,13 +108,13 @@ clsier_svm = GridSearchCV(estimator=svm.SVC(), param_grid=parm_svm, scoring='acc
 clsier_knn = GridSearchCV(estimator=KNeighborsClassifier(), param_grid=parm_knn, scoring='accuracy',cv=5,verbose=VERBOSE,n_jobs=N_JOBS)
 clsier_rfr = GridSearchCV(estimator=RandomForestRegressor(), param_grid=parm_rfr, scoring='explained_variance',cv=GRID_CV,verbose=VERBOSE,n_jobs=N_JOBS)
 
-train = np.array(x_train, dtype=object)
-train = train.reshape(train.shape[0], train.shape[1]*train.shape[2])
-print(f"Reshaped size: {train.shape}")
+x_train = np.array(x_train, dtype=object)
+x_train = x_train.reshape(x_train.shape[0], x_train.shape[1]*x_train.shape[2])
+print(f"Reshaped size: {x_train.shape}")
 
 if TRAIN_SVM:
   print("Training SVM")
-  clsier_svm.fit(train, y_train)
+  clsier_svm.fit(x_train, y_train)
   print("Best params: ", clsier_svm.best_params_)
   print("Result:")
   pprint(clsier_svm.cv_results_)
@@ -123,7 +123,7 @@ if TRAIN_SVM:
 
 if TRAIN_KNN:
   print("Training KNN")
-  clsier_knn.fit(train, y_train)
+  clsier_knn.fit(x_train, y_train)
   print("Best params: ", clsier_knn.best_params_)
   print("Result:")
   pprint(clsier_knn.cv_results_)
@@ -144,11 +144,11 @@ print("===== Start Cross-Vaildating =====")
 print(f"Cross-vaildating {Category}")
 
 if TRAIN_SVM:
-  score_svm = cross_val_score(clsier_svm, train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
+  score_svm = cross_val_score(clsier_svm, x_train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
   print("SVM score: ", score_svm)
 
 if TRAIN_KNN:
-  score_knn = cross_val_score(clsier_knn, train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
+  score_knn = cross_val_score(clsier_knn, x_train, y_train, scoring='accuracy', cv=kfold, verbose=VERBOSE,n_jobs=N_JOBS)
   print("KNN score: ", score_knn)
 
 if TRAIN_RFR:
