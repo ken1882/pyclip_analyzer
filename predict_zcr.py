@@ -7,6 +7,10 @@ from sklearn.neighbors import KNeighborsClassifier
 import json
 from collections import defaultdict
 
+# If sample score is above average multiple this value
+# then it'll be selected
+RFR_OKTHRESHOLD = 1 
+
 if __name__ == "__main__":
   argv_parse.init()
   _G.init()
@@ -36,11 +40,16 @@ data = _G.all_data_files()
 
 models = {
   "SVM": _G.load_data("svm_zcr.mod"),
-  #"KNN": _G.load_data("knn_zcr.mod")
+  #"KNN": _G.load_data("knn_zcr.mod"),
+  "RFR": _G.load_data("rfr_zcr.mod")
 }
 
 for mod_name, model in models.items():
   print(f"=== {mod_name} ===")
+  ok_cnt = 0
+  nonok_cnt = 0
+  total_frame = 0
+  real_ok_cnt = 0
   for file in data:
     parts   = re.split(r"\\|\/",file)
     if len(parts[2].split('_')[-1]) < 3:
@@ -60,6 +69,8 @@ for mod_name, model in models.items():
           train_n = model.best_estimator_.shape_fit_[-1]
         elif mod_name == "KNN":
           train_n = model.best_estimator_._tree.data.shape[-1]
+        elif mod_name == "RFR":
+          train_n = model.best_estimator_.n_features_
           
         dim_n = train_n // val.shape[0] - val.shape[-1]
         val = np.hstack((val, np.zeros((val.shape[0], dim_n))))
@@ -67,18 +78,40 @@ for mod_name, model in models.items():
         result[cat].append(model.predict(train)[0])
         
     print(file)
+    passed_frame = []
     for k,ar in result.items():
       print(k)
       printed = False
-      for i,v in enumerate(ar):
-        if v != 0:
-          print(i, v)
+      if mod_name == "RFR":
+        ar = np.array(ar)
+        pass_idx = np.nonzero(np.where(ar > np.average(ar[np.nonzero(ar)]) * RFR_OKTHRESHOLD, ar, 0))[0]
+        if len(pass_idx) > 0:
+          for i in pass_idx:
+            print(i, ar[i])
+            passed_frame.append(i)
           printed = True
-      if not printed:
-        print(ar)
+      else:
+        for i,v in enumerate(ar):
+          if v != 0:
+            print(i, v)
+            passed_frame.append(i)
+            printed = True
+        if not printed:
+          print(ar)
       print('-'*10)
     print("Expected:")
+    total_frame += len(y_train)
     for i,v in enumerate(y_train):
       if v != 0:
+        real_ok_cnt += 1
         print(i)
+      if v != 0 and i in passed_frame:
+        ok_cnt += 1
+      if v == 0 and i in passed_frame:
+        nonok_cnt += 1
     print('='*10)
+  
+  print("\nSummary:")
+  print(f"True Positive: {ok_cnt}/{real_ok_cnt} ({ok_cnt/max(real_ok_cnt,1)})")
+  print(f"False Positive: {nonok_cnt}/{total_frame - real_ok_cnt} ({nonok_cnt / (total_frame - real_ok_cnt)})")
+
