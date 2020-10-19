@@ -158,7 +158,7 @@ def start_analyze(sample_proc=None):
 def spawn_analyze_proc(idx, slug, hostname, proc_type):
   cmd = f"{_G.PYTHON_COMMAND} analyzer.py -i {idx} --host-name {hostname}"
   if proc_type == _G.PROC_SAMPLE:
-    cmd += f"-c {slug} -s"
+    cmd += f" -c {slug} -s"
   elif proc_type == _G.PROC_FULL:
     cmd += '-f'
 
