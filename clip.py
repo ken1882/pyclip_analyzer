@@ -49,7 +49,11 @@ def extandclip_video(vfilename, out_folder=None):
   video.close()
 
 def spawn_extracting_proc(idx, slug, hostname, sample_proc):
-  cmd = f"{_G.PYTHON_COMMAND} clip.py -i {idx} -c {slug} --host-name {hostname}"
+  if slug:
+    cmd = f"{_G.PYTHON_COMMAND} clip.py -i {idx} -c {slug} --host-name {hostname}"
+  else:
+    cmd = f"{_G.PYTHON_COMMAND} clip.py -i {idx} --host-name {hostname}"
+
   if sample_proc:
     cmd += " -s"
   _th = Thread(target=_G.system_command, args=(cmd,))

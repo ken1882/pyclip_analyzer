@@ -255,7 +255,8 @@ def start_sample_process():
     analyzer.spawn_analyze_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, False)
   
   print("Complete, time taken: ", timeit.default_timer() - st_time)
-  
+
+
 # py sample_automata.py -c SecretiveLazyVelociraptorBCWarrior
 if __name__ == "__main__":
   try:

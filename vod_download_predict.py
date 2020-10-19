@@ -97,9 +97,6 @@ def get_m3u8_info(id):
   print(f"Target URI list: {len(ret)}")
   return ret
 
-def make_fullvod_filename(id):
-  return f"{_G.TestDataFolder}/{_G.StreamFilePrefix}_vod{id}.{_G.VideoFormat}"
-
 def _download_m3u8_full(id, info, start_t, duration, thread_id):
   global THRET_VAL
   filename = f"{_G.TestDataFolder}/{_G.StreamFilePrefix}_vod{id}.{_G.VideoFormat}"
@@ -120,7 +117,7 @@ def download_full_vod(id, duration, _async=False, thread_id=0):
   _th = Thread(target=_download_m3u8_full, args=(id,info,0,duration,thread_id))
   _th.start()
   if not _async:
-    _th.join()  
+    _th.join()
 
 def get_id_from_data(data):
   return data['vod']['id']
@@ -133,6 +130,8 @@ def get_id_from_slug(slug):
 # feature processing and predicting
 def start_full_process():
   global THRET_VAL
+  st_time = timeit.default_timer()
+  
   vodid = _G.StreamFileIndex
   data = get_video_info(vodid)
   print(f"Retrieved vod data: {data}")
@@ -141,12 +140,37 @@ def start_full_process():
   
   _G.StreamFilePrefix = data['user_name'].upper()
   _G.FLAG_SAMPLE_PROC = False
+  _G.init()
   duration = hms2sec(data['duration'])
   print(f"Duration: {data['duration']} ({duration})")
 
   download_full_vod(vodid, duration)
-
+  errno, stream_filename = None, ''
+  while True:
+    try:
+      errno, stream_filename = THRET_VAL[0]
+      break
+    except Exception:
+      _G.wait(0.3)
   
+  inp = ''
+  if _G.FLAG_ALWAYS_YES:
+    inp = 'Y'
+  elif _G.FLAG_ALWAYS_NO:
+    inp = 'N'
+  
+  if errno == ERRNO_EXIST:
+    while inp != 'Y' and inp != 'N':
+      inp = input("Stream video already exists, process anyway? (Y/N): ").upper()
+  
+  if errno == ERRNO_OK or inp == 'Y':
+    _G.wait(1)
+    clip.spawn_extracting_proc(_G.StreamFileIndex, None, _G.StreamFilePrefix, False)
+    _G.wait(1)
+    analyzer.spawn_analyze_proc(_G.StreamFileIndex, None, _G.StreamFilePrefix, False)
+  
+  print("Complete, time taken: ", timeit.default_timer() - st_time)
+
 
 if __name__ == "__main__":
   refresh_token()
