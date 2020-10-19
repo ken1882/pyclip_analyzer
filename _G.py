@@ -21,6 +21,7 @@ StreamFolder  = "stream"
 AudioFolder   = "audio"
 PlotFolder    = "plot"
 PositiveSampleFolder = "positive_samples"
+TestDataFolder = "tdata"
 
 VideoFormat   = "mp4"
 AudioFormat   = "mp3"
