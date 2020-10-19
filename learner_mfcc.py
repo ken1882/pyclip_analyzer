@@ -22,7 +22,7 @@ TRAIN_RFR = True
 if __name__ == "__main__":
   argv_parse.init()
   _G.init()
-  N_JOBS = 4
+  N_JOBS = 1
   
 # parts: splited path of the origin data
 #        used to locate postive label file path
@@ -93,7 +93,7 @@ for idx, freq_col in enumerate(x_train):
 kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 parm_svm = {'kernel':['linear', 'rbf', 'poly', 'sigmoid'], 'C':[0.01, 0.1, 1, 10]}
 parm_knn = {'n_neighbors':[1,3,5,7]}
-parm_rfr = {'n_estimators':[50,75,128,256], 'bootstrap': [True, False], 'max_depth':[None,3,5,7,10,16], 'min_samples_split': [2,3,5,10,20,30]}
+parm_rfr = {'n_estimators':[25,50,75,128,256], 'bootstrap': [True, False], 'max_depth':[None,3,5,7,10,16], 'min_samples_split': [2,3,5,10,20,30]}
 
 print("----- Training Proc -----")
 cat = 'mfcc'

@@ -75,6 +75,7 @@ for mod_name, model in models.items():
         train = val.reshape(1, -1)
         result[cat].append(model.predict(train)[0])
     
+    print(file)
     passed_frame = []
     for k,ar in result.items():
       print(k)
