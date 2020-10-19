@@ -31,8 +31,10 @@ DataFormat    = "dat"
 
 StreamFileIndex  = 580483021
 StreamFilePrefix = "ESL_DOTA2"
-PlotFileSuffix   = "_plt{0:04}"
-AudioClipSuffix  = "_clp{0:03}"
+PlotFileSuffix   = "_plt"
+AudioClipSuffix  = "_clp"
+PlotFileSuffixFormat   = "_plt{0:04}"
+AudioClipSuffixFormat  = "_clp{0:04}"
 
 StreamFileSuffix = ''
 VideoFileStem    = ''
@@ -114,10 +116,10 @@ def ensure_dir_exist(path):
       os.mkdir(pwd)
 
 def plot_filename(idx):
-  return f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{PlotFileSuffix.format(idx)}.{PlotFormat}"
+  return f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/{PlotFileSuffixFormat.format(idx)}.{PlotFormat}"
 
 def audio_filename(idx):
-  return f"{AudioClipSuffix.format(idx)}.{AudioFormat}"
+  return f"{AudioClipSuffixFormat.format(idx)}.{AudioFormat}"
 
 def out_filename(idx):
   return f"{StreamFolder}/{VideoFileStem}_out.{OutFormat}"
@@ -180,9 +182,14 @@ IndicatorColor = (0,0,0)
 PreCacheTime = 3 # sec
 
 FLAG_SAMPLE_PROC = False
+FLAG_FULL_PROC = False
 FLAG_RETRAIN = False
 FLAG_ALWAYS_YES = False
 FLAG_ALWAYS_NO = False
+
+PROC_NORMAL = 0
+PROC_SAMPLE = 1
+PROC_FULL   = 2
 
 Categories = ['melspec', 'rolloff', 'zcr', 'mfcc']
 IgnoredCategories = ['waveplot', 'melspec']

@@ -44,18 +44,20 @@ def extandclip_video(vfilename, out_folder=None):
   _G.VideoFilename = vfilename
   _G.ensure_dir_exist(f"{out_folder}/_.mp3")
   video = load_video(vfilename)
-  _G.video_length = vlen = video.duration
+  _G.video_length = video.duration
   generate_audio_clips(video.audio, out_folder)
   video.close()
 
-def spawn_extracting_proc(idx, slug, hostname, sample_proc):
+def spawn_extracting_proc(idx, slug, hostname, proc_type):
+  cmd = f"{_G.PYTHON_COMMAND} clip.py -i {idx} --host-name {hostname}"
   if slug:
-    cmd = f"{_G.PYTHON_COMMAND} clip.py -i {idx} -c {slug} --host-name {hostname}"
-  else:
-    cmd = f"{_G.PYTHON_COMMAND} clip.py -i {idx} --host-name {hostname}"
+    cmd += f"-c {slug}"
+  
+  if proc_type == _G.PROC_SAMPLE:
+    cmd += f" -s"
+  elif proc_type == _G.PROC_FULL:
+    cmd += '-f'
 
-  if sample_proc:
-    cmd += " -s"
   _th = Thread(target=_G.system_command, args=(cmd,))
   _th.start()
   _th.join()
@@ -64,5 +66,7 @@ if __name__ == "__main__":
   filename = _G.VideoFilename
   if _G.FLAG_SAMPLE_PROC:
     filename = f"{_G.PositiveSamplePath}/{_G.ClipName}.{_G.VideoFormat}"
-  print(f"Extract and lipping file {filename}")
+  elif _G.FLAG_FULL_PROC:
+    filename = f"{_G.TestDataFolder}/{_G.StreamFilePrefix}_vod{_G.StreamFileIndex}.{_G.VideoFormat}"
+  print(f"Extract and clipping file {filename}")
   extandclip_video(filename)

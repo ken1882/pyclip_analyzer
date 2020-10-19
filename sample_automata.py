@@ -219,11 +219,11 @@ def start_sample_process():
   
     print("Extracting clips audio")
     _G.wait(1)
-    clip.spawn_extracting_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, True)
+    clip.spawn_extracting_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, _G.PROC_SAMPLE)
     
     print("Analyzing clip...")
     _G.wait(1)
-    analyzer.spawn_analyze_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, True)
+    analyzer.spawn_analyze_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, _G.PROC_SAMPLE)
 
   ori_st, duration = _G.get_download_timeinfo(start_t)
   print(f"Ori. start time/duraiton: ", ori_st, duration)

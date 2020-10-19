@@ -126,7 +126,7 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
   # show_fullscreen()
 
 def get_audio_files(prefix, episode):
-  return sorted(glob(f"{_G.AudioFolder}/{prefix}/{episode}/_clp*.{_G.AudioFormat}"))
+  return sorted(glob(f"{_G.AudioFolder}/{prefix}/{episode}/{_G.AudioClipSuffix}*.{_G.AudioFormat}"))
 
 
 def start_analyze(sample_proc=None):
@@ -155,10 +155,13 @@ def start_analyze(sample_proc=None):
       #   break
     _G.dump_data(data, _G.get_stream_adump_filename())
 
-def spawn_analyze_proc(idx, slug, hostname, sample_proc=False):
-  cmd = f"{_G.PYTHON_COMMAND} analyzer.py -i {idx} -c {slug} --host-name {hostname}"
-  if sample_proc:
-    cmd += " -s"
+def spawn_analyze_proc(idx, slug, hostname, proc_type):
+  cmd = f"{_G.PYTHON_COMMAND} analyzer.py -i {idx} --host-name {hostname}"
+  if proc_type == _G.PROC_SAMPLE:
+    cmd += f"-c {slug} -s"
+  elif proc_type == _G.PROC_FULL:
+    cmd += '-f'
+
   _th = Thread(target=_G.system_command, args=(cmd,))
   _th.start()
   _th.join()

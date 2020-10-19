@@ -100,11 +100,13 @@ def get_m3u8_info(id):
 def _download_m3u8_full(id, info, start_t, duration, thread_id):
   global THRET_VAL
   filename = f"{_G.TestDataFolder}/{_G.StreamFilePrefix}_vod{id}.{_G.VideoFormat}"
+  _G.ensure_dir_exist(filename)
   if os.path.exists(filename):
     print(f"[Thread] video {id} already exists, skipping")
     THRET_VAL[thread_id] = [ERRNO_EXIST, filename]
     return ERRNO_EXIST
   else:
+    print(f"Downloading to {filename}...")
     cmd = _G.FFmpegDownloadCmd.format(start_t, info[2], duration, filename)
     os.system(cmd)
     THRET_VAL[thread_id] = [ERRNO_OK, filename]
@@ -165,9 +167,9 @@ def start_full_process():
   
   if errno == ERRNO_OK or inp == 'Y':
     _G.wait(1)
-    clip.spawn_extracting_proc(_G.StreamFileIndex, None, _G.StreamFilePrefix, False)
+    clip.spawn_extracting_proc(_G.StreamFileIndex, None, _G.StreamFilePrefix, _G.PROC_FULL)
     _G.wait(1)
-    analyzer.spawn_analyze_proc(_G.StreamFileIndex, None, _G.StreamFilePrefix, False)
+    analyzer.spawn_analyze_proc(_G.StreamFileIndex, None, _G.StreamFilePrefix, _G.PROC_FULL)
   
   print("Complete, time taken: ", timeit.default_timer() - st_time)
 

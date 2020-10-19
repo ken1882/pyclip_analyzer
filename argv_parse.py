@@ -11,6 +11,7 @@ parser.add_argument("-p", "--positive-label", help="Positive duration of target 
 parser.add_argument("-c", "--clip-name", help="Name of the clip")
 parser.add_argument("-y", "--yes", action="store_true", help="Auto enter Y when promopting")
 parser.add_argument("-n", "--no", action="store_true", help="Auto enter N when promopting")
+parser.add_argument("-f", "--full-process", action="store_true", help="Full vod processing")
 
 def init():
   args = parser.parse_args()
