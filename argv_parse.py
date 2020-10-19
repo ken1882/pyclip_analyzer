@@ -16,6 +16,8 @@ parser.add_argument("-f", "--full-process", action="store_true", help="Full vod 
 def init():
   args = parser.parse_args()
   _G.FLAG_SAMPLE_PROC = True if args.sample else False
+  _G.FLAG_FULL_PROC   = True if args.full_process else False
+
   if args.vodid:
     _G.StreamFileIndex = args.vodid
   if args.retrain:

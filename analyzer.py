@@ -160,7 +160,7 @@ def spawn_analyze_proc(idx, slug, hostname, proc_type):
   if proc_type == _G.PROC_SAMPLE:
     cmd += f" -c {slug} -s"
   elif proc_type == _G.PROC_FULL:
-    cmd += '-f'
+    cmd += ' -f'
 
   _th = Thread(target=_G.system_command, args=(cmd,))
   _th.start()
