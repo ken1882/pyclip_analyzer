@@ -29,8 +29,8 @@ PlotFormat    = "png"
 OutFormat     = "mkv"
 DataFormat    = "dat"
 
-StreamFileIndex  = 580483021
-StreamFilePrefix = "ESL_DOTA2"
+StreamFileIndex  = 0
+StreamFilePrefix = "PLACEHOLDER"
 PlotFileSuffix   = "_plt"
 AudioClipSuffix  = "_clp"
 PlotFileSuffixFormat   = "_plt{0:04}"
@@ -110,7 +110,7 @@ def ensure_dir_exist(path):
   if len(path) == 0:
     return
   pwd = ""
-  for i, dir in enumerate(path):
+  for dir in path:
     pwd += f"{dir}/"
     if not os.path.exists(pwd):
       os.mkdir(pwd)
@@ -163,6 +163,17 @@ def all_positive_files():
 def all_data_files():
   pattern = f"{PlotFolder}/**/*data.dat"
   return sorted(glob(pattern, recursive=True))
+
+def all_test_files():
+  tstream_files = f"{TestDataFolder}/*.{VideoFormat}"
+  ret = []
+  for filename in glob(tstream_files, recursive=True):
+    filename = ''.join(filename.split('/')[1:])
+    host = filename.split('_')[0]
+    filename = '_'.join(filename.split('_')[1:])
+    vodid = filename.split(f'.{VideoFormat}')[0]
+    ret.append(f"{PlotFolder}/{host}/_{vodid}_/audio_data.{DataFormat}")
+  return ret
 
 def get_stream_adump_filename():
   return f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/audio_data.{DataFormat}"
