@@ -206,8 +206,11 @@ Categories = ['melspec', 'rolloff', 'zcr', 'mfcc']
 IgnoredCategories = ['waveplot', 'melspec']
 PostiveLabelFilename = "labels.dat"
 
-FFmpegDownloadCmd = 'ffmpeg -protocol_whitelist "file,http,https,tcp,tls" -y -ss ' + \
+FFmpegStreamDownloadCmd = 'ffmpeg -protocol_whitelist "file,http,https,tcp,tls" -y -ss ' + \
   '{:d} -i {:s} -c copy -t {:d} {:s}'
+
+FFmpegAudioDownloadCmd = 'ffmpeg -protocol_whitelist "file,http,https,tcp,tls" -y -ss ' + \
+  '{:d} -i {:s} -c:a libmp3lame -t {:d} {:s}'
 
 StartDownloadTimestamp = 0
 DownloadTimeOffset = [15 * 60, 15 * 60]

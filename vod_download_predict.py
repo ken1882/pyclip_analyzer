@@ -87,36 +87,43 @@ def get_m3u8_info(id):
   token = response['token']
   sig = response['sig']
   m3u8url = f"https://usher.ttvnw.net/vod/{id}.m3u8?player=twitchweb&nauth={token}&" + \
-    f"nauthsig={sig}&$allow_audio_only=true&allow_source=true&type=any&p={randint(1,9999)}"
+    f"nauthsig={sig}&allow_audio_only=true&allow_source=true&type=any&p={randint(1,9999)}"
   data = urllib.request.urlopen(m3u8url).read()
   uris = data.decode('utf-8')
   ret  = []
   for uri in uris.split("\n"):
     if "https:" in uri:
-        ret.append(uri.strip())
+      ret.append(uri.strip())
   print(f"Target URI list: {len(ret)}")
   return ret
 
-def _download_m3u8_full(id, info, start_t, duration, thread_id):
+def _download_m3u8_full(id, info, start_t, duration, thread_id, audio_only=False):
   global THRET_VAL
-  filename = f"{_G.TestDataFolder}/{_G.StreamFilePrefix}_vod{id}.{_G.VideoFormat}"
+  _fmt = _G.AudioFormat if audio_only else _G.VideoFormat
+  filename = f"{_G.TestDataFolder}/{_G.StreamFilePrefix}_vod{id}.{_fmt}"
   _G.ensure_dir_exist(filename)
   if os.path.exists(filename):
     print(f"[Thread] video {id} already exists, skipping")
     THRET_VAL[thread_id] = [ERRNO_EXIST, filename]
     return ERRNO_EXIST
+  target_m3u8 = info[2]
+  cmd = ''
+  if audio_only:
+    target_m3u8 = [uri for uri in info if 'audio_only' in uri][0]
+    cmd = _G.FFmpegAudioDownloadCmd.format(start_t, target_m3u8, duration, filename)
   else:
-    print(f"Downloading to {filename}...")
-    cmd = _G.FFmpegDownloadCmd.format(start_t, info[2], duration, filename)
-    os.system(cmd)
-    THRET_VAL[thread_id] = [ERRNO_OK, filename]
-    return ERRNO_OK
+    cmd = _G.FFmpegStreamDownloadCmd.format(start_t, target_m3u8, duration, filename)
+  print(f"Downloading {target_m3u8} to {filename}...")
+  print(f">> {cmd}")
+  os.system(cmd)
+  THRET_VAL[thread_id] = [ERRNO_OK, filename]
+  return ERRNO_OK
 
-def download_full_vod(id, duration, _async=False, thread_id=0):
+def download_full_vod(id, duration, _async=False, thread_id=0, audio_only=False):
   _G.ensure_dir_exist(f"{_G.TestDataFolder}/")
   info = get_m3u8_info(id)
   print(f"Downloading {id}")
-  _th = Thread(target=_download_m3u8_full, args=(id,info,0,duration,thread_id))
+  _th = Thread(target=_download_m3u8_full, args=(id,info,0,duration,thread_id,audio_only))
   _th.start()
   if not _async:
     _th.join()
@@ -174,6 +181,7 @@ def start_full_process():
   print("Complete, time taken: ", timeit.default_timer() - st_time)
 
 
+# py vod_download_predict.py -i 820891468
 if __name__ == "__main__":
   refresh_token()
   start_full_process()
