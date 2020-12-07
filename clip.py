@@ -40,7 +40,7 @@ def extandclip_video(vfilename, out_folder=None):
     if _G.FLAG_POSITIVE_PROC:
       out_folder = _G.PositiveSamplePath
     elif _G.FLAG_NEGATIVE_PROC:
-      out_folder = _G.NegativeSampleFolder
+      out_folder = _G.NegativeSamplePath
     else:
       out_folder = _G.StreamAudioPath
   _G.VideoFilename = vfilename
