@@ -216,6 +216,7 @@ StartDownloadTimestamp = 0
 DownloadTimeOffset = [15 * 60, 15 * 60]
 
 PYTHON_COMMAND = "python3"
+FullVodPath = None
 
 def get_download_timeinfo(t):
   return [max(0, t-DownloadTimeOffset[0]), DownloadTimeOffset[0]+DownloadTimeOffset[1]]
