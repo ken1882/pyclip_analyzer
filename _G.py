@@ -164,6 +164,17 @@ def all_data_files():
   pattern = f"{PlotFolder}/**/*data.dat"
   return sorted(glob(pattern, recursive=True))
 
+def all_test_files():
+  tstream_files = f"{TestDataFolder}/*.{VideoFormat}"
+  ret = []
+  for filename in glob(tstream_files, recursive=True):
+    filename = ''.join(filename.split('/')[1:])
+    host = filename.split('_')[0]
+    filename = '_'.join(filename.split('_')[1:])
+    vodid = filename.split(f'.{VideoFormat}')[0]
+    ret.append(f"{PlotFolder}/{host}/_{vodid}_/audio_data.{DataFormat}")
+  return ret
+
 def get_stream_adump_filename():
   return f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/audio_data.{DataFormat}"
 
@@ -202,6 +213,7 @@ StartDownloadTimestamp = 0
 DownloadTimeOffset = [15 * 60, 15 * 60]
 
 PYTHON_COMMAND = "python3"
+FullVodPath = None
 
 def get_download_timeinfo(t):
   return [max(0, t-DownloadTimeOffset[0]), DownloadTimeOffset[0]+DownloadTimeOffset[1]]

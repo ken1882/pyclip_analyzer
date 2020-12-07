@@ -12,10 +12,13 @@ parser.add_argument("-c", "--clip-name", help="Name of the clip")
 parser.add_argument("-y", "--yes", action="store_true", help="Auto enter Y when promopting")
 parser.add_argument("-n", "--no", action="store_true", help="Auto enter N when promopting")
 parser.add_argument("-f", "--full-process", action="store_true", help="Full vod processing")
+parser.add_argument("--fullvod-path", help="Path to full vod audio data folder")
 
 def init():
   args = parser.parse_args()
   _G.FLAG_SAMPLE_PROC = True if args.sample else False
+  _G.FLAG_FULL_PROC   = True if args.full_process else False
+
   if args.vodid:
     _G.StreamFileIndex = args.vodid
   if args.retrain:
@@ -32,6 +35,8 @@ def init():
     _G.FLAG_ALWAYS_YES = True
   if args.no:
     _G.FLAG_ALWAYS_NO = True
+  if args.fullvod_path:
+    _G.FullVodPath = args.fullvod_path
   
   if args.yes and args.no:
     print("Argument option -y(--yes) and -n(--no) conflicted!")

@@ -56,6 +56,7 @@ def spawn_extracting_proc(idx, slug, hostname, proc_type):
   if proc_type == _G.PROC_SAMPLE:
     cmd += f" -s"
   elif proc_type == _G.PROC_FULL:
+    print("Full sample proc")
     cmd += ' -f'
 
   _th = Thread(target=_G.system_command, args=(cmd,))

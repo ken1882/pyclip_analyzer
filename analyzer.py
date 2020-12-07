@@ -126,6 +126,8 @@ def analyze_and_plot_audio(filename, out_filename, overwrite=False):
   # show_fullscreen()
 
 def get_audio_files(prefix, episode):
+  dir = f"{_G.AudioFolder}/{prefix}/{episode}/{_G.AudioClipSuffix}*.{_G.AudioFormat}"
+  print("Audio target dir: ", dir)
   return sorted(glob(f"{_G.AudioFolder}/{prefix}/{episode}/{_G.AudioClipSuffix}*.{_G.AudioFormat}"))
 
 
@@ -160,7 +162,7 @@ def spawn_analyze_proc(idx, slug, hostname, proc_type):
   if proc_type == _G.PROC_SAMPLE:
     cmd += f" -c {slug} -s"
   elif proc_type == _G.PROC_FULL:
-    cmd += '-f'
+    cmd += ' -f'
 
   _th = Thread(target=_G.system_command, args=(cmd,))
   _th.start()
