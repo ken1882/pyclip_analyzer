@@ -29,8 +29,8 @@ PlotFormat    = "png"
 OutFormat     = "mkv"
 DataFormat    = "dat"
 
-StreamFileIndex  = 580483021
-StreamFilePrefix = "ESL_DOTA2"
+StreamFileIndex  = 0
+StreamFilePrefix = "PLACEHOLDER"
 PlotFileSuffix   = "_plt"
 AudioClipSuffix  = "_clp"
 PlotFileSuffixFormat   = "_plt{0:04}"
@@ -110,7 +110,7 @@ def ensure_dir_exist(path):
   if len(path) == 0:
     return
   pwd = ""
-  for i, dir in enumerate(path):
+  for dir in path:
     pwd += f"{dir}/"
     if not os.path.exists(pwd):
       os.mkdir(pwd)

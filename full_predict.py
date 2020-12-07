@@ -1,7 +1,9 @@
+import sys
 import json
 import re
 from collections import defaultdict
 from pprint import pprint
+from threading import Thread
 
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
@@ -77,7 +79,7 @@ def predict(file):
       if "RFR" in mod_name:
         process_rfr_result(result[mod_name])
 
-def load_test_data(file=None):
+def predict_data(file=None):
   if not file:
     file = _G.all_test_files()
     for f in file:
@@ -85,9 +87,17 @@ def load_test_data(file=None):
   else:
     predict(file)
 
+def spawn_predict_proc(host, id):
+  cmd = f"{_G.PYTHON_COMMAND} full_predict.py \"{_G.PlotFolder}/{host}/_{id}_/audio_data.{_G.DataFormat}\""
+  _th = Thread(target=_G.system_command, args=(cmd,))
+  _th.start()
+  _th.join()
+
 if __name__ == "__main__":
   argv_parse.init()
   _G.init()
   _G.IgnoredCategories += ['zcr']
-  load_test_data(_G.FullVodPath)
-
+  if len(sys.argv) > 1:
+    predict_data(sys.argv[1])
+  else:
+    predict_data()
