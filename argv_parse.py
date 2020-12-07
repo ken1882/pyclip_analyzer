@@ -14,12 +14,14 @@ parser.add_argument("-y", "--yes", action="store_true", help="Auto enter Y when 
 parser.add_argument("-n", "--no", action="store_true", help="Auto enter N when promopting")
 parser.add_argument("-f", "--full-process", action="store_true", help="Full vod processing")
 parser.add_argument("--fullvod-path", help="Path to full vod audio data folder")
+parser.add_argument("--train-negatives", help="Include negative samples when training")
 
 def init():
   args = parser.parse_args()
-  _G.FLAG_POSITIVE_PROC = True if args.positive_sample else False
-  _G.FLAG_NEGATIVE_PROC = True if args.negative_sample else False
-  _G.FLAG_FULL_PROC     = True if args.full_process else False
+  _G.FLAG_POSITIVE_PROC  = True if args.positive_sample else False
+  _G.FLAG_NEGATIVE_PROC  = True if args.negative_sample else False
+  _G.FLAG_FULL_PROC      = True if args.full_process else False
+  _G.FLAG_TRAIN_NEGATIVE = True if args.train_negatives else False
 
   if args.vodid:
     _G.StreamFileIndex = args.vodid

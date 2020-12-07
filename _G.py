@@ -187,6 +187,10 @@ def all_positive_files():
   pattern = f"{PositiveSampleFolder}/**/*.dat"
   return sorted(glob(pattern, recursive=True))
 
+def all_negative_files():
+  pattern = f"{NegativeSampleFolder}/**/*.dat"
+  return sorted(glob(pattern, recursive=True))
+
 def all_data_files():
   pattern = f"{PlotFolder}/**/*data.dat"
   return sorted(glob(pattern, recursive=True))
@@ -219,12 +223,13 @@ IndicatorColor = (0,0,0)
 
 PreCacheTime = 3 # sec
 
-FLAG_POSITIVE_PROC = False
-FLAG_NEGATIVE_PROC = False
-FLAG_FULL_PROC = False
-FLAG_RETRAIN = False
-FLAG_ALWAYS_YES = False
-FLAG_ALWAYS_NO = False
+FLAG_POSITIVE_PROC  = False
+FLAG_NEGATIVE_PROC  = False
+FLAG_FULL_PROC      = False
+FLAG_RETRAIN        = False
+FLAG_ALWAYS_YES     = False
+FLAG_ALWAYS_NO      = False
+FLAG_TRAIN_NEGATIVE = False
 
 PROC_NORMAL = 0
 PROC_FULL   = 1
