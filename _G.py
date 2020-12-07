@@ -49,7 +49,7 @@ StreamAudioPath = ''
 
 def init():
   global StreamFileSuffix, VideoFileStem, VideoFilename, FullAudioFilename
-  global PositiveSamplePath, ClipName, StreamAudioPath
+  global PositiveSamplePath, ClipName, StreamAudioPath, NegativeSamplePath
   StreamFileSuffix = f"_vod{StreamFileIndex}_{ClipName}"
   VideoFileStem    = f"{StreamFilePrefix}{StreamFileSuffix}"
   VideoFilename    = f"{StreamFolder}/{VideoFileStem}.{VideoFormat}"
