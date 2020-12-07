@@ -1,7 +1,9 @@
 __pycache__/*
 .ipynb_checkpoints/*
+.vscode/*
 debug/*
 positive_samples/*
+negative_samples/*
 visualization/*
 
 *.mp3

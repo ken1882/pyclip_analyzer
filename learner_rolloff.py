@@ -15,8 +15,8 @@ VERBOSE = 1
 N_JOBS  = 1
 GRID_CV = 5
 Category = 'rolloff'
-TRAIN_SVM = True
-TRAIN_KNN = True
+TRAIN_SVM = False
+TRAIN_KNN = False
 TRAIN_RFR = True
 
 if __name__ == "__main__":
@@ -97,7 +97,7 @@ kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
 parm_svm = {'kernel':['linear', 'rbf', 'poly', 'sigmoid'], 'C':[0.01, 0.1, 1, 10]}
 parm_knn = {'n_neighbors':[1,3,5,7,9], 'algorithm': ['ball_tree', 'kd_tree', 'brute']}
-parm_rfr = {'n_estimators':[16,32,50,75,128,256], 'bootstrap': [True, False], 'max_depth':[None,3,5,7,10,16], 'min_samples_split': [2,3,5,10,20,30]}
+parm_rfr = {'n_estimators':[16,32,50,75,128,256], 'bootstrap': [True, False], 'max_depth':[None,3,5,7,10,16], 'min_samples_split': [2,3,5,10,20,30], 'random_state': [42]}
 
 print("----- Training Proc -----")
 

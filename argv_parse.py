@@ -2,7 +2,8 @@ import _G
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument("-s", "--sample", action="store_true", help="Process positive samples")
+parser.add_argument("--positive-sample", action="store_true", help="Process positive samples")
+parser.add_argument("--negative-sample", action="store_true", help="Process negative samples")
 parser.add_argument("-i", "--vodid", type=int, help="Target vodid")
 parser.add_argument("-r", "--retrain", action="store_true", help="Retrain exsiting model")
 parser.add_argument("--host-name", help="Name of the host streamer")
@@ -16,8 +17,9 @@ parser.add_argument("--fullvod-path", help="Path to full vod audio data folder")
 
 def init():
   args = parser.parse_args()
-  _G.FLAG_SAMPLE_PROC = True if args.sample else False
-  _G.FLAG_FULL_PROC   = True if args.full_process else False
+  _G.FLAG_POSITIVE_PROC = True if args.positive_sample else False
+  _G.FLAG_NEGATIVE_PROC = True if args.negative_sample else False
+  _G.FLAG_FULL_PROC     = True if args.full_process else False
 
   if args.vodid:
     _G.StreamFileIndex = args.vodid

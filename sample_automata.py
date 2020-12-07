@@ -197,7 +197,7 @@ def start_sample_process():
   
   _G.StreamFileIndex  = int(id)
   _G.StreamFilePrefix = data['broadcaster']['name'].upper()
-  _G.FLAG_SAMPLE_PROC = True
+  _G.FLAG_POSITIVE_PROC = True
   _G.init()
   
   errno,clip_fname = download_clip(id, slug)
@@ -219,11 +219,11 @@ def start_sample_process():
   
     print("Extracting clips audio")
     _G.wait(1)
-    clip.spawn_extracting_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, _G.PROC_SAMPLE)
+    clip.spawn_extracting_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, _G.PROC_SAMPLE_POS)
     
     print("Analyzing clip...")
     _G.wait(1)
-    analyzer.spawn_analyze_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, _G.PROC_SAMPLE)
+    analyzer.spawn_analyze_proc(_G.StreamFileIndex, slug, _G.StreamFilePrefix, _G.PROC_SAMPLE_POS)
 
   ori_st, duration = _G.get_download_timeinfo(start_t)
   print(f"Ori. start time/duraiton: ", ori_st, duration)

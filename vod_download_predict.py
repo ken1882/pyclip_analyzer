@@ -148,7 +148,7 @@ def start_full_process():
   print(f"VodId: {vodid}\n{data}")
   
   _G.StreamFilePrefix = data['user_name'].upper()
-  _G.FLAG_SAMPLE_PROC = False
+  _G.FLAG_POSITIVE_PROC = False
   _G.init()
   duration = hms2sec(data['duration'])
   print(f"Duration: {data['duration']} ({duration})")

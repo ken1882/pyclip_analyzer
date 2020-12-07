@@ -21,6 +21,7 @@ StreamFolder  = "stream"
 AudioFolder   = "audio"
 PlotFolder    = "plot"
 PositiveSampleFolder = "positive_samples"
+NegativeSampleFolder = "negative_samples"
 TestDataFolder = "tdata"
 
 VideoFormat   = "mp4"
@@ -42,6 +43,7 @@ VideoFilename    = ''
 FullAudioFilename  = ''
 PositiveSamplePath = ''
 PositiveLabelString = ""
+NegativeSamplePath = ''
 ClipName = ""
 StreamAudioPath = ''
 
@@ -54,6 +56,7 @@ def init():
   StreamAudioPath    = f"{AudioFolder}/{StreamFilePrefix}/{StreamFileSuffix}"
   FullAudioFilename  = f"{StreamAudioPath}/{VideoFileStem}.{AudioFormat}"
   PositiveSamplePath = f"{PositiveSampleFolder}/{StreamFilePrefix}/{StreamFileSuffix}"
+  NegativeSamplePath = f"{NegativeSampleFolder}/{StreamFileIndex}"
   PlotPlaybackFilename = f"{PlotFolder}/{StreamFilePrefix}/{StreamFileSuffix}/playback{StreamFileSuffix}.dat"
 
 DefaultSR      = 22050
@@ -148,6 +151,30 @@ def make_positive_dataname(idx):
 def positive_plot_filename(idx):
   return f"{PositiveSamplePath}/plt_{idx}.{PlotFormat}"
 
+def negative_videos():
+  pattern = f"{NegativeSamplePath}/*.{VideoFormat}"
+  files = glob(pattern)
+  return sorted([file.replace("\\", "/") for file in files])
+
+def negative_audios():
+  pattern = f"{NegativeSamplePath}/*.{AudioFormat}"
+  files = glob(pattern)
+  return sorted([file.replace("\\", "/") for file in files])
+
+def negative_data():
+  pattern = f"{NegativeSamplePath}/*.{DataFormat}"
+  files = glob(pattern)
+  return sorted([file.replace("\\", "/") for file in files])
+
+def make_negative_afilename(idx):
+  return f"{NegativeSamplePath}/{idx}.{AudioFormat}"
+
+def make_negative_dataname(idx):
+  return f"{NegativeSamplePath}/negative_audio_{idx}.{DataFormat}"
+
+def negative_plot_filename(idx):
+  return f"{NegativeSamplePath}/plt_{idx}.{PlotFormat}"
+  
 def dump_data(data, fname):
   with open(fname, 'wb') as fp:
     pk.dump(data, fp)
@@ -192,15 +219,17 @@ IndicatorColor = (0,0,0)
 
 PreCacheTime = 3 # sec
 
-FLAG_SAMPLE_PROC = False
+FLAG_POSITIVE_PROC = False
+FLAG_NEGATIVE_PROC = False
 FLAG_FULL_PROC = False
 FLAG_RETRAIN = False
 FLAG_ALWAYS_YES = False
 FLAG_ALWAYS_NO = False
 
 PROC_NORMAL = 0
-PROC_SAMPLE = 1
-PROC_FULL   = 2
+PROC_FULL   = 1
+PROC_SAMPLE_POS = 2
+PROC_SAMPLE_NEG = 3
 
 Categories = ['melspec', 'rolloff', 'zcr', 'mfcc']
 IgnoredCategories = ['waveplot', 'melspec']

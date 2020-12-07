@@ -131,21 +131,27 @@ def get_audio_files(prefix, episode):
   return sorted(glob(f"{_G.AudioFolder}/{prefix}/{episode}/{_G.AudioClipSuffix}*.{_G.AudioFormat}"))
 
 
-def start_analyze(sample_proc=None):
+def start_analyze():
   global data
   print(f"Analyzing stream file index of {_G.StreamFileIndex}")
-  if sample_proc:
-    _G.FLAG_SAMPLE_PROC = sample_proc
   data = []
   
-  if _G.FLAG_SAMPLE_PROC:
-    print(f"Analyzing Samples")
+  if _G.FLAG_POSITIVE_PROC:
+    print(f"Analyzing Positive Samples")
     _G.ensure_dir_exist(f"{_G.PositiveSamplePath}/.")
     _G.wait(1)
     files = _G.positive_audios()
     for i, file in enumerate(files):
       analyze_and_plot_audio(file, _G.positive_plot_filename(i), True)
       _G.dump_data(data, _G.make_positive_dataname(i))
+  elif _G.FLAG_NEGATIVE_PROC:
+    print(f"Analyzing Negative Samples")
+    _G.ensure_dir_exist(f"{_G.NegativeSamplePath}/.")
+    _G.wait(1)
+    files = _G.negative_audios()
+    for i, file in enumerate(files):
+      analyze_and_plot_audio(file, _G.negative_plot_filename(i), True)
+      _G.dump_data(data, _G.make_negative_dataname(i))
   else:
     _G.ensure_dir_exist(_G.plot_filename(0))
     files = get_audio_files(_G.StreamFilePrefix, _G.StreamFileSuffix)
@@ -159,8 +165,8 @@ def start_analyze(sample_proc=None):
 
 def spawn_analyze_proc(idx, slug, hostname, proc_type):
   cmd = f"{_G.PYTHON_COMMAND} analyzer.py -i {idx} --host-name {hostname}"
-  if proc_type == _G.PROC_SAMPLE:
-    cmd += f" -c {slug} -s"
+  if proc_type == _G.PROC_SAMPLE_POS:
+    cmd += f" -c {slug} --positive-sample"
   elif proc_type == _G.PROC_FULL:
     cmd += ' -f'
 
