@@ -85,6 +85,7 @@ for i in reversed(incom_idx):
 
 # include negative samples
 if _G.FLAG_TRAIN_NEGATIVE:
+  print("Loading negative samples...")
   neg_files = _G.all_negative_files()
   for file in neg_files:
     frame = _G.load_data(file)[0][Category]

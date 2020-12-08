@@ -14,7 +14,7 @@ parser.add_argument("-y", "--yes", action="store_true", help="Auto enter Y when 
 parser.add_argument("-n", "--no", action="store_true", help="Auto enter N when promopting")
 parser.add_argument("-f", "--full-process", action="store_true", help="Full vod processing")
 parser.add_argument("--fullvod-path", help="Path to full vod audio data folder")
-parser.add_argument("--train-negatives", help="Include negative samples when training")
+parser.add_argument("--train-negatives", action="store_true", help="Include negative samples when training")
 
 def init():
   args = parser.parse_args()
