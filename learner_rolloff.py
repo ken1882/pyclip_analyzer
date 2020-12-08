@@ -45,7 +45,6 @@ def load_postive_label(parts):
   return ret
 
 data = _G.all_data_files()
-negs = _G.all_negative_files()
 x_train = []
 y_train = []
 base = 0
@@ -84,11 +83,17 @@ for file in data:
 for i in reversed(incom_idx):
   del y_train[i]
 
-y_train = np.array(y_train).flatten()
-
 # include negative samples
 if _G.FLAG_TRAIN_NEGATIVE:
-  pass
+  neg_files = _G.all_negative_files()
+  for file in neg_files:
+    frame = _G.load_data(file)[0][Category]
+    nlen  = frame.shape[0]
+    max_nsize = max_nsize if max_nsize >= nlen else nlen
+    x_train.append(frame)
+    y_train.append(0)
+
+y_train = np.array(y_train).flatten()
 
 print(f"Sample Size: {len(data)}")
 print(f"Yt: {y_train.shape}\n{y_train}\n{np.nonzero(y_train)}\n\n")
