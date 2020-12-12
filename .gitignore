@@ -5,6 +5,7 @@ debug/*
 positive_samples/*
 negative_samples/*
 visualization/*
+tdata/*
 
 *.mp3
 *.mp4

@@ -14,7 +14,7 @@ import _G
 import argv_parse
 
 Model = {
-  "RFR_MFCC": _G.load_data("rfr_mfcc.mod"),
+  #"RFR_MFCC": _G.load_data("rfr_mfcc.mod"),
   "RFR_ROLLOFF": _G.load_data("rfr_rolloff.mod"),
 }
 
@@ -97,7 +97,8 @@ if __name__ == "__main__":
   argv_parse.init()
   _G.init()
   _G.IgnoredCategories += ['zcr']
-  if len(sys.argv) > 1:
-    predict_data(sys.argv[1])
+  if _G.ArgvFiles:
+    for file in _G.ArgvFiles:
+      predict_data(file)
   else:
     predict_data()

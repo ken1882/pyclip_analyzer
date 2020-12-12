@@ -2,6 +2,7 @@ import _G
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
+parser.add_argument("files",nargs='*')
 parser.add_argument("--positive-sample", action="store_true", help="Process positive samples")
 parser.add_argument("--negative-sample", action="store_true", help="Process negative samples")
 parser.add_argument("-i", "--vodid", type=int, help="Target vodid")
@@ -23,6 +24,8 @@ def init():
   _G.FLAG_FULL_PROC      = True if args.full_process else False
   _G.FLAG_TRAIN_NEGATIVE = True if args.train_negatives else False
 
+  if args.files:
+    _G.ArgvFiles = args.files
   if args.vodid:
     _G.StreamFileIndex = args.vodid
   if args.retrain:

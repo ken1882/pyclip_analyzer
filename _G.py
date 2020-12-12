@@ -46,6 +46,7 @@ PositiveLabelString = ""
 NegativeSamplePath = ''
 ClipName = ""
 StreamAudioPath = ''
+ArgvFiles = []
 
 def init():
   global StreamFileSuffix, VideoFileStem, VideoFilename, FullAudioFilename
