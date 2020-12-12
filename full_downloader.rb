@@ -1,20 +1,12 @@
 id_list = %{
-774557552
-775668422
-771399768
-770537705 
-769026660
-767741057 
-766516917 
-766150215 
-765461551
+
 }.split(/[\r\n]+/).select{|l| !l.strip.empty?}.collect{|i| i.strip}
 
 WORKER_CNT = 1
 
 def spawn_automata(id_list, worker_id=0)
 	id_list.each do |id|
-		cmd = "python3 full_predict.py --fullvod-path \"plot/ESL_DOTA2/_vod#{id}_/audio_data.dat\""
+		cmd = "python3 vod_download_analyze.py -i #{id}"
 		puts "[Worker #{worker_id}]: #{cmd}"
 		system(cmd)
 	end

@@ -181,7 +181,7 @@ def start_full_process():
   print("Complete, time taken: ", timeit.default_timer() - st_time)
 
 
-# py vod_download_predict.py -i 820891468
+# py vod_download_analyze.py -i 820891468
 if __name__ == "__main__":
   refresh_token()
   start_full_process()
